@@ -63,6 +63,6 @@ func main() {
 	for err == nil {
 		fmt.Fprintf(os.Stdout, "Character: %s\n", string(char))
 		char, err = getChar()	// Extra: when a function has two outputs, you can use _ for when
-	}												// dont need a certain variable, so for example char, _ = getChar()
+	}												// you dont need a certain variable, so for example char, _ = getChar()
 
 }
