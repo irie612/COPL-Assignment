@@ -49,7 +49,7 @@ func getChar() (error) {
   var err error
 	nextChar, err = fstream.ReadByte()
 	if err != io.EOF {
-    if unicode.IsLetter(rune(nextChar)) ||
+    unicode.IsLetter(rune(nextChar)) ||
     unicode.IsDigit(rune(nextChar)) {
       charClass = VARIABLE
     } else {
