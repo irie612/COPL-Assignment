@@ -10,6 +10,12 @@ import (
 )
 
 //*************************************************************************
+/*
+TODO: try lex in main
+TODO: store string of tokens
+TODO: figuring out merge conlifcts
+ */
+//*************************************************************************
 
 //Global Variables
 var fstream *bufio.Reader
