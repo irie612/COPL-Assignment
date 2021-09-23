@@ -27,18 +27,20 @@ const (
 	LEFT_P = 1
 	RIGHT_P = 2
 	LAMBDA = 3
-	VARIABLE = 4
-	MULT_OP = 5
-  UNKNOWN = 99
+	MULT_OP = 4
+  VARIABLE = 5
 )
 
 //*************************************************************************
 
-// Function Declarations
-/*func getChar()
-func addChar()
-func getNonBlank()
-func lex()*/
+// Character Classes
+const (
+  LETTER = 6
+  DIGIT = 7
+  UNKNOWN = 99
+  EOF = -1
+)
+
 
 //*************************************************************************
 
@@ -49,16 +51,28 @@ func getChar() (error) {
   var err error
 	nextChar, err = fstream.ReadByte()
 	if err != io.EOF {
-    unicode.IsLetter(rune(nextChar)) ||
-    unicode.IsDigit(rune(nextChar)) {
-      charClass = VARIABLE
-    } else {
-      charClass = UNKNOWN
-    }
+		if unicode.IsLetter(rune(nextChar)) || unicode.IsDigit(rune(nextChar)) {
+      charClass = ALPHA_NUM
+		} else {
+		charClass = UNKNOWN
+	}
 		return err
 	} else {
     return errors.New("EOF Reached")
 	}
+}
+
+//*************************************************************************
+
+// addChar
+func addChar() {
+  if (lexLen < 99) {
+    lexeme[lexLen++] = nextChar
+    lexeme[lexLen] = 0
+  } else {
+    fmt.Fprintf(os.Stderr, "Error - lexeme is too long \n")
+    os.Exit(1)
+  }
 }
 
 //*************************************************************************
@@ -82,14 +96,31 @@ func getNonBlank () {
 
 //*************************************************************************
 
-/*func lex() {
+func lex() {
   lexLen = 0
   getNonBlank()
 
   switch charClass {
-    case 
+    case VAR:
+      addChar()
+      getChar()
+      for charClass == VAR {
+        addChar()
+        getChar()
+      }
+      nextToken = 
+      break
+    }
+
+    case UNKNOWN {
+      lookup(nextChar)
+      getChar()
+      break
+    }
+      
+
   }
-}*/
+}
 
 //*************************************************************************
 
