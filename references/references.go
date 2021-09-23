@@ -117,9 +117,29 @@ func lex() {
       getChar()
       break
     }
-      
-
   }
+}
+
+//*************************************************************************
+func lookup(char byte ){
+	switch char{
+		case '(':
+			addChar()
+			nextToken=LEFT_P
+			break
+		case ')':
+			addChar()
+			nextToken=RIGHT_P
+			break
+		case '\\':
+			addChar()
+			nextToken=LAMBDA
+			break
+		default:
+			addChar()
+			nextToken = EOF
+			break
+	}
 }
 
 //*************************************************************************
