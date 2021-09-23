@@ -24,20 +24,20 @@ var charClass int
 
 //Tokens
 const (
-	LEFT_P = 1
-	RIGHT_P = 2
-	LAMBDA = 3
-	MULT_OP = 4
-  VARIABLE = 5
-  EOF = -1
+  EOF = -1 
+	LEFT_P = iota
+	RIGHT_P
+	LAMBDA
+  VARIABLE
+  DOT 
 )
 
 //*************************************************************************
 
 // Character Classes
 const (
-  LETTER = 6
-  DIGIT = 7
+  LETTER = iota + 10
+  DIGIT 
   UNKNOWN = 99
 )
 
@@ -123,8 +123,37 @@ func lex() {
       break
     
     case EOF:
-
+      lexeme[0] = 'E'
+      lexeme[1] = 'O'
+      lexeme[2] = 'F'
+      lexeme[3] = 0
+      break
   }
+
+  fmt.Fprintf("Next token is: %d, next lexeme is %s \n", nextToken, lexeme)
+  return nextToken
+}
+
+//*************************************************************************
+func lookup(char byte ){
+	switch char{
+		case '(':
+			addChar()
+			nextToken=LEFT_P
+			break
+		case ')':
+			addChar()
+			nextToken=RIGHT_P
+			break
+		case '\\':
+			addChar()
+			nextToken=LAMBDA
+			break
+		default:
+			addChar()
+			nextToken = EOF
+			break
+	}
 }
 
 //*************************************************************************
@@ -152,4 +181,5 @@ func main() {
 		fmt.Fprintf(os.Stdout, "Character: %s\n", string(nextChar))
 		err = getChar()
 	}
+
 }
