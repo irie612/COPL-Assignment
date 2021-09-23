@@ -6,31 +6,62 @@ import (
 	"fmt"
 	"io"
 	"os"
+  "unicode"
 )
+
+//*************************************************************************
 
 //Global Variables
 var fstream *bufio.Reader
+var lexeme [100]byte
+var nextChar byte
+var lexLen int
+var token int
+var nextToken int
+var charClass int
+
+//*************************************************************************
 
 //Tokens
-// I'm not sure what we need to do with these tokens yet
 const (
-	LEFT_P = iota	// iota = enumerate, so everything below LEFT_P automatically gets assigned an INT of (LEFT_P + 1)
-	RIGHT_P // = 2					// You can also do iota + 5 (any int), for when a range of numbers is already used
-	LAMBDA // = 3
-	VARIABLE // etc...
+	LEFT_P = 1
+	RIGHT_P = 2
+	LAMBDA = 3
+	VARIABLE = 4
+	MULT_OP = 5
+  UNKNOWN = 99
 )
+
+//*************************************************************************
+
+// Function Declarations
+/*func getChar()
+func addChar()
+func getNonBlank()
+func lex()*/
+
+//*************************************************************************
 
 // Function to read a given file byte for byte.
 // In the scenario that that the EOF is reached
 // return an error.
-func getChar() (byte, error) {
-	if char, err := fstream.ReadByte(); err != io.EOF {
-		return char, err
+func getChar() (error) {
+  var err error
+	nextChar, err = fstream.ReadByte()
+	if err != io.EOF {
+    if unicode.IsLetter(rune(nextChar)) ||
+    unicode.IsDigit(rune(nextChar)) {
+      charClass = VARIABLE
+    } else {
+      charClass = UNKNOWN
+    }
+		return err
 	} else {
-			return 0, errors.New("EOF Reached")
+    return errors.New("EOF Reached")
 	}
 }
 
+//*************************************************************************
 
 // Checks if the programs gives an error, if so
 // quit the program with the return value 1.
@@ -40,6 +71,27 @@ func checkError(err error) {
 		os.Exit(1)
 	}
 }
+
+//*************************************************************************
+
+func getNonBlank () {
+  for unicode.IsSpace(rune(nextChar)){
+    getChar()
+  }
+}
+
+//*************************************************************************
+
+/*func lex() {
+  lexLen = 0
+  getNonBlank()
+
+  switch charClass {
+    case 
+  }
+}*/
+
+//*************************************************************************
 
 func main() {
 	if len(os.Args) < 2 {
@@ -57,12 +109,12 @@ func main() {
 
 	fstream = bufio.NewReader(f) // Buffer for the reader
 
-	char, err := getChar()
+	err = getChar()
 	checkError(err) 
 
 	for err == nil {
-		fmt.Fprintf(os.Stdout, "Character: %s\n", string(char))
-		char, err = getChar()	// Extra: when a function has two outputs, you can use _ for when
-	}												// you dont need a certain variable, so for example char, _ = getChar()
+		fmt.Fprintf(os.Stdout, "Character: %s\n", string(nextChar))
+		err = getChar()
+	}
 
 }
