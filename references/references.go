@@ -68,7 +68,8 @@ func getChar() (error) {
 // addChar
 func addChar() {
   if (lexLen < 99) {
-    lexeme[lexLen++] = nextChar
+    lexeme[lexLen] = nextChar
+    lexLen++
     lexeme[lexLen] = 0
   } else {
     fmt.Fprintf(os.Stderr, "Error - lexeme is too long \n")
@@ -97,7 +98,7 @@ func getNonBlank () {
 
 //*************************************************************************
 
-func lex() {
+func lex() int {
   lexLen = 0
   getNonBlank()
 
@@ -105,7 +106,7 @@ func lex() {
     case LETTER:
       addChar()
       getChar()
-      for charClass == LETTER || charClass == DIGIT
+      for charClass == LETTER || charClass == DIGIT {
         addChar()
         getChar()
       }
@@ -113,7 +114,7 @@ func lex() {
       break
     
     case DIGIT:
-      fmt.Fprintf(ost.Stderr, "Variable starts with digit \n")
+      fmt.Fprintf(os.Stderr, "Variable starts with digit \n")
       os.Exit(1)
       break
 
@@ -130,7 +131,7 @@ func lex() {
       break
   }
 
-  fmt.Fprintf("Next token is: %d, next lexeme is %s \n", nextToken, lexeme)
+  fmt.Fprintf(os.Stdout, "Next token is: %d, next lexeme is %s \n", nextToken, lexeme)
   return nextToken
 }
 
