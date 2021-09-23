@@ -29,6 +29,7 @@ const (
 	LAMBDA = 3
 	MULT_OP = 4
   VARIABLE = 5
+  EOF = -1
 )
 
 //*************************************************************************
@@ -38,9 +39,7 @@ const (
   LETTER = 6
   DIGIT = 7
   UNKNOWN = 99
-  EOF = -1
 )
-
 
 //*************************************************************************
 
@@ -51,11 +50,13 @@ func getChar() (error) {
   var err error
 	nextChar, err = fstream.ReadByte()
 	if err != io.EOF {
-		if unicode.IsLetter(rune(nextChar)) || unicode.IsDigit(rune(nextChar)) {
-      charClass = ALPHA_NUM
-		} else {
+		if unicode.IsLetter(rune(nextChar)) {
+      charClass = LETTER
+		} else if unicode.IsDigit(rune(nextChar)) {
+      charClass = DIGIT
+    } else {
 		charClass = UNKNOWN
-	}
+    }
 		return err
 	} else {
     return errors.New("EOF Reached")
@@ -101,23 +102,27 @@ func lex() {
   getNonBlank()
 
   switch charClass {
-    case VAR:
+    case LETTER:
       addChar()
       getChar()
-      for charClass == VAR {
+      for charClass == LETTER || charClass == DIGIT
         addChar()
         getChar()
       }
-      nextToken = 
+      nextToken = VARIABLE
       break
-    }
+    
+    case DIGIT:
+      fmt.Fprintf(ost.Stderr, "Variable starts with digit \n")
+      os.Exit(1)
+      break
 
-    case UNKNOWN {
+    case UNKNOWN:
       lookup(nextChar)
       getChar()
       break
-    }
-      
+    
+    case EOF:
 
   }
 }
@@ -147,5 +152,4 @@ func main() {
 		fmt.Fprintf(os.Stdout, "Character: %s\n", string(nextChar))
 		err = getChar()
 	}
-
 }
