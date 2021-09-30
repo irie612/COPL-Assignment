@@ -9,3 +9,5 @@
 # intellij files
 /.idea/
 /Assignment1.iml
+#bytcode
+main
