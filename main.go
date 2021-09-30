@@ -98,7 +98,7 @@ func checkError(err error) {
 //*************************************************************************
 
 func getNonBlank() {
-	for unicode.IsSpace(rune(nextChar)) {
+	for unicode.IsSpace(rune(nextChar)) && nextChar != '\n' {
 		getChar()
 	}
 }
@@ -200,7 +200,7 @@ func main() {
 		clearLexeme()
 
 		if nextToken == EOL {
-			fmt.Fprintf(os.Stdout, "EOL.")
+			fmt.Fprintf(os.Stdout, "EOL.\n")
 		}
 	}
 }
