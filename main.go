@@ -30,7 +30,8 @@ var charClass int
 
 //Tokens
 const (
-  EOF = -1 
+  EOF = -2 
+	EOL = -1
 	LEFT_P = iota
 	RIGHT_P
 	LAMBDA
@@ -156,6 +157,9 @@ func lookup(char byte ){
 			addChar()
 			nextToken=LAMBDA
 			break
+		case '\n':
+			addChar()
+			nextToken=EOL
 		default:
 			addChar()
 			nextToken = EOF
@@ -177,16 +181,15 @@ func main() {
 	f, err := os.Open(os.Args[1])	// Opens file
 	checkError(err)
 
-	fmt.Fprint(os.Stdout, "test 1 \n")
-
 	fstream = bufio.NewReader(f) // Buffer for the reader
 
 	err = getChar()
 	checkError(err) 
 
-	for err == nil {
-		fmt.Fprintf(os.Stdout, "Character: %s\n", string(nextChar))
-		err = getChar()
+	for err == nil && nextToken != EOF { 
+		lex();
+		if nextToken == EOL {
+			fmt.Fprintf(os.Stdout, "EOL." )
+		}
 	}
-
 }
