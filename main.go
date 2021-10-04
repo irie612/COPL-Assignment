@@ -11,8 +11,6 @@ import (
 
 //*************************************************************************
 /*
-TODO: try lex in main
-TODO: store string of tokens
 TODO: figuring out merge conlifcts
 */
 //*************************************************************************
@@ -41,7 +39,7 @@ const (
 
 //*************************************************************************
 
-// Character Classes
+// Character Classes.
 const (
 	LETTER = iota + 10
 	DIGIT
@@ -50,12 +48,12 @@ const (
 
 //*************************************************************************
 
-// Function to read a given file byte for byte.
+// Function to read a given file byte for byte and set the appropriate charClass
 // In the scenario that the EOF is reached
 // return an error.
 func getChar() error {
 	var err error
-	nextChar, err = fstream.ReadByte()
+	nextChar, err = fstream.ReadByte()  //may be possible to implement support for UNICODE by using ReadRune
 	if err != io.EOF {
 		if unicode.IsLetter(rune(nextChar)) {
 			charClass = LETTER
@@ -73,7 +71,7 @@ func getChar() error {
 
 //*************************************************************************
 
-// addChar
+// add char to the lexeme
 func addChar() {
 	if lexLen < 99 {
 		lexeme[lexLen] = nextChar
@@ -108,6 +106,7 @@ func getNonBlank() {
 
 // Function that assigns nextToken and lexeme
 func lex() int {
+	clearLexeme()
 	lexLen = 0
 	getNonBlank()
 
@@ -196,14 +195,13 @@ func main() {
 
 	fstream = bufio.NewReader(f) // Buffer for the reader
 
-	err = getChar()
+	err = getChar()		//read first character
 	checkError(err)
 
 	for err == nil && nextToken != EOF {
 		lex()
-		clearLexeme()
 		if nextToken == EOL {
-			fmt.Fprintf(os.Stdout, "EOL.\n")
+			fmt.Fprintf(os.Stdout, "END OF LINE\n")
 		}
 	}
 }
