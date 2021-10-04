@@ -105,12 +105,13 @@ func getNonBlank() {
 
 //*************************************************************************
 
+// Function that assign nextToken and lexeme
 func lex() int {
 	lexLen = 0
 	getNonBlank()
 
 	switch charClass {
-	case LETTER:
+	case LETTER:		//if the lexeme starts with a letter nextToken is a variable
 		addChar()
 		getChar()
 		for charClass == LETTER || charClass == DIGIT {
@@ -120,22 +121,17 @@ func lex() int {
 		nextToken = VARIABLE
 		break
 
-	case DIGIT:
+	case DIGIT:  //if the lexeme starts with a digit there's an error
 		fmt.Fprintf(os.Stderr, "Variable starts with digit \n")
 		os.Exit(1)
 		break
 
-	case UNKNOWN:
+	case UNKNOWN: // any other case
 		lookup(nextChar)
 		getChar()
 		break
 
-	case EOF:
-		lexeme[0] = 'E'
-		lexeme[1] = 'O'
-		lexeme[2] = 'F'
-		lexeme[3] = 0
-		break
+
 	}
 
 	fmt.Fprintf(os.Stdout, "Next token is: %d, next lexeme is %s \n", nextToken, lexeme)
@@ -157,14 +153,21 @@ func lookup(char byte) {
 		addChar()
 		nextToken = LAMBDA
 		break
-	case '\n':
-		addChar()
-		nextToken = EOL
 	case '.':
 		addChar()
 		nextToken = DOT
+	case '\n':
+		lexeme[0] = 'E'
+		lexeme[1] = 'O'
+		lexeme[2] = 'F'
+		lexeme[3] = 0
+		nextToken = EOL
+
 	default:
-		addChar()
+		lexeme[0] = 'E'
+		lexeme[1] = 'O'
+		lexeme[2] = 'F'
+		lexeme[3] = 0
 		nextToken = EOF
 		break
 	}
@@ -198,7 +201,6 @@ func main() {
 	for err == nil && nextToken != EOF {
 		lex()
 		clearLexeme()
-
 		if nextToken == EOL {
 			fmt.Fprintf(os.Stdout, "EOL.\n")
 		}
