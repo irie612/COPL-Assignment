@@ -185,6 +185,9 @@ func lookup(char byte) {
 
 func parse(){
 	lex()
+	if nextToken == EOF{
+		return
+	}
 	expr()
 }
 
@@ -197,7 +200,8 @@ func expr(){
 
 func expr_p(){
 	print("Enter <expr_p>\n")
-	if !(nextToken == EOF || nextToken==EOL){
+
+	if !(nextToken == EOF || nextToken==EOL || nextToken==RIGHT_P){
 		lexpr()
 		expr_p()
 	}
@@ -224,7 +228,6 @@ func pexpr(){
 	if nextToken == LEFT_P{
 		lex()
 		expr()
-		lex()
 		if nextToken!=RIGHT_P {
 			fmt.Fprintf(os.Stderr, "MISSING RIGHT PARENTHESIS\n")
 			os.Exit(1)
