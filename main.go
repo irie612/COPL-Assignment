@@ -190,19 +190,50 @@ func parse(){
 
 func expr(){
 	print("Enter <expr>\n")
+	lexpr()
+	expr_p()
 	print("Exit <expr>\n")
 }
 
 func expr_p(){
 	print("Enter <expr_p>\n")
+	if !(nextToken == EOF || nextToken==EOL){
+		lexpr()
+		expr_p()
+	}
 	print("Exit <expr_p>\n")
 }
 func lexpr(){
 	print("Enter <lexpr>\n")
+	if nextToken == LAMBDA{		//check if we have a lambda abstraction
+		lex()
+		if nextToken == VARIABLE{	//check if we have a variable after the lambda
+			lex()
+			lexpr()
+		} else{ // nextToken != VARIABLE ERROR
+			fmt.Fprintf(os.Stderr, "NO VARIABLE AFTER LAMBDA TOKEN\n")
+			os.Exit(1)
+		}
+	} else {
+		pexpr()
+	}
 	print("Exit <lexpr>\n")
 }
 func pexpr(){
 	print("Enter <pexpr>\n")
+	if nextToken == LEFT_P{
+		lex()
+		expr()
+		lex()
+		if nextToken!=RIGHT_P {
+			fmt.Fprintf(os.Stderr, "MISSING RIGHT PARENTHESIS\n")
+			os.Exit(1)
+		}else{
+			lex()
+		}
+	} else{ //var case
+		lex()
+	}
 	print("Exit <pexpr>\n")
 }
 
