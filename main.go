@@ -137,6 +137,13 @@ func lex() int {
 	return nextToken
 }
 
+func clearLexeme() {
+	for i := range lexeme {
+		lexeme[i] = 0
+	}
+}
+
+
 //*************************************************************************
 //assigns nextToken BASED on the character.
 func lookup(char byte) {
@@ -175,10 +182,28 @@ func lookup(char byte) {
 
 //*************************************************************************
 
-func clearLexeme() {
-	for i := range lexeme {
-		lexeme[i] = 0
-	}
+
+func parse(){
+	lex()
+	expr()
+}
+
+func expr(){
+	print("Enter <expr>\n")
+	print("Exit <expr>\n")
+}
+
+func expr_p(){
+	print("Enter <expr_p>\n")
+	print("Exit <expr_p>\n")
+}
+func lexpr(){
+	print("Enter <lexpr>\n")
+	print("Exit <lexpr>\n")
+}
+func pexpr(){
+	print("Enter <pexpr>\n")
+	print("Exit <pexpr>\n")
 }
 
 func main() {
@@ -199,7 +224,7 @@ func main() {
 	checkError(err)
 
 	for err == nil && nextToken != EOF {
-		lex()
+		parse()
 		if nextToken == EOL {
 			fmt.Fprintf(os.Stdout, "END OF LINE\n")
 		}
