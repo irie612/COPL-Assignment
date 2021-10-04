@@ -216,7 +216,7 @@ func lexpr() {
 		lex()
 		if nextToken == VARIABLE { //check if we have a variable after the lambda
 			lex()
-			if nextToken != EOL {
+			if nextToken != EOL && nextToken != EOF {
 				lexpr()
 			} else {
 				fmt.Fprintf(os.Stderr, "MISSING EXPRESSION AFTER LAMBDA ABSTRACTION\n")
