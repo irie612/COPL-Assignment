@@ -23,6 +23,7 @@ var lexLen int
 var token int
 var nextToken int
 var charClass int
+var outputString string
 
 //*************************************************************************
 
@@ -143,6 +144,9 @@ func clearLexeme() {
 	}
 }
 
+func addLexeme(){
+	outputString = outputString + string(lexeme[:])
+}
 //*************************************************************************
 //assigns nextToken BASED on the character.
 func lookup(char byte) {
@@ -182,6 +186,7 @@ func lookup(char byte) {
 //*************************************************************************
 
 func parse() {
+	outputString= ""
 	lex()
 	if nextToken == EOF {
 		return
@@ -191,6 +196,7 @@ func parse() {
 		fmt.Fprintf(os.Stderr, "INPUT STRING NOT FULLY PARSED\n")
 		os.Exit(1)
 	}
+	fmt.Fprintf(os.Stdout, "OUTPUT STRING IS: %s\n", outputString)
 }
 
 func expr() {
@@ -213,8 +219,10 @@ func expr_p() {
 func lexpr() {
 	fmt.Fprintf(os.Stdout, "Enter <lexpr>\n")
 	if nextToken == LAMBDA { //check if we have a lambda abstraction
+		addLexeme()
 		lex()
 		if nextToken == VARIABLE { //check if we have a variable after the lambda
+			addLexeme()
 			lex()
 			if nextToken != EOL && nextToken != EOF {
 				lexpr()
@@ -235,12 +243,14 @@ func lexpr() {
 func pexpr() {
 	fmt.Fprintf(os.Stdout, "Enter <pexpr>\n")
 	if nextToken == LEFT_P {
+		addLexeme()
 		lex()
 		if nextToken == RIGHT_P {
 			fmt.Fprintf(os.Stderr, "MISSING EXPRESSION AFTER OPENING PARENTHESIS\n")
 			os.Exit(1)
 		}
 		expr()
+		addLexeme()
 		if nextToken != RIGHT_P {
 			fmt.Fprintf(os.Stderr, "MISSING CLOSING PARENTHESIS\n")
 			os.Exit(1)
@@ -248,11 +258,12 @@ func pexpr() {
 			lex()
 		}
 	} else { //var case
+		addLexeme()
 		lex()
 	}
 	fmt.Fprintf(os.Stdout, "Exit <pexpr>\n")
 }
-
+//*************************************************************************
 func main() {
 	if len(os.Args) < 2 {
 		fmt.Fprintf(os.Stderr, "No arguments given. \n")
