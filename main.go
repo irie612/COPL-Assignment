@@ -187,7 +187,7 @@ func parse() {
 		return
 	}
 	expr()
-	if nextToken != EOL {
+	if nextToken != EOL && nextToken != EOF {
 		fmt.Fprintf(os.Stderr, "INPUT STRING NOT FULLY PARSED\n")
 		os.Exit(1)
 	}
@@ -242,7 +242,7 @@ func pexpr() {
 		}
 		expr()
 		if nextToken != RIGHT_P {
-			fmt.Fprintf(os.Stderr, "MISSING RIGHT PARENTHESIS\n")
+			fmt.Fprintf(os.Stderr, "MISSING CLOSING PARENTHESIS\n")
 			os.Exit(1)
 		} else {
 			lex()
