@@ -106,7 +106,7 @@ func getNonBlank() {
 
 //*************************************************************************
 
-// Function that assign nextToken and lexeme
+// Function that assigns nextToken and lexeme
 func lex() int {
 	lexLen = 0
 	getNonBlank()
@@ -139,6 +139,7 @@ func lex() int {
 }
 
 //*************************************************************************
+//assigns nextToken BASED on the character.
 func lookup(char byte) {
 	switch char {
 	case '(':
@@ -159,7 +160,7 @@ func lookup(char byte) {
 	case '\n':
 		lexeme[0] = 'E'
 		lexeme[1] = 'O'
-		lexeme[2] = 'F'
+		lexeme[2] = 'L'
 		lexeme[3] = 0
 		nextToken = EOL
 
