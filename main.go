@@ -53,7 +53,7 @@ const (
 // return an error.
 func getChar() error {
 	var err error
-	nextChar, err = fstream.ReadByte()  //may be possible to implement support for UNICODE by using ReadRune
+	nextChar, err = fstream.ReadByte() //may be possible to implement support for UNICODE by using ReadRune
 	if err != io.EOF {
 		if unicode.IsLetter(rune(nextChar)) {
 			charClass = LETTER
@@ -143,7 +143,6 @@ func clearLexeme() {
 	}
 }
 
-
 //*************************************************************************
 //assigns nextToken BASED on the character.
 func lookup(char byte) {
@@ -182,62 +181,76 @@ func lookup(char byte) {
 
 //*************************************************************************
 
-
-func parse(){
+func parse() {
 	lex()
-	if nextToken == EOF{
+	if nextToken == EOF {
 		return
 	}
 	expr()
+	if nextToken != EOL {
+		fmt.Fprintf(os.Stderr, "INPUT STRING NOT FULLY PARSED\n")
+		os.Exit(1)
+	}
 }
 
-func expr(){
-	print("Enter <expr>\n")
+func expr() {
+	fmt.Fprintf(os.Stdout, "Enter <expr>\n")
 	lexpr()
 	expr_p()
-	print("Exit <expr>\n")
+	fmt.Fprintf(os.Stdout, "Exit <expr>\n")
 }
 
-func expr_p(){
-	print("Enter <expr_p>\n")
+func expr_p() {
+	fmt.Fprintf(os.Stdout, "Enter <expr_p>\n")
 
-	if !(nextToken == EOF || nextToken==EOL || nextToken==RIGHT_P){
+	if !(nextToken == EOF || nextToken == EOL || nextToken == RIGHT_P) {
 		lexpr()
 		expr_p()
 	}
-	print("Exit <expr_p>\n")
+	fmt.Fprintf(os.Stdout, "Exit <expr_p>\n")
 }
-func lexpr(){
-	print("Enter <lexpr>\n")
-	if nextToken == LAMBDA{		//check if we have a lambda abstraction
+
+func lexpr() {
+	fmt.Fprintf(os.Stdout, "Enter <lexpr>\n")
+	if nextToken == LAMBDA { //check if we have a lambda abstraction
 		lex()
-		if nextToken == VARIABLE{	//check if we have a variable after the lambda
+		if nextToken == VARIABLE { //check if we have a variable after the lambda
 			lex()
-			lexpr()
-		} else{ // nextToken != VARIABLE ERROR
+			if nextToken != EOL {
+				lexpr()
+			} else {
+				fmt.Fprintf(os.Stderr, "MISSING EXPRESSION AFTER LAMBDA ABSTRACTION\n")
+				os.Exit(1)
+			}
+		} else { // nextToken != VARIABLE ERROR
 			fmt.Fprintf(os.Stderr, "NO VARIABLE AFTER LAMBDA TOKEN\n")
 			os.Exit(1)
 		}
 	} else {
 		pexpr()
 	}
-	print("Exit <lexpr>\n")
+	fmt.Fprintf(os.Stdout, "Exit <lexpr>\n")
 }
-func pexpr(){
-	print("Enter <pexpr>\n")
-	if nextToken == LEFT_P{
+
+func pexpr() {
+	fmt.Fprintf(os.Stdout, "Enter <pexpr>\n")
+	if nextToken == LEFT_P {
 		lex()
+		if nextToken == RIGHT_P {
+			fmt.Fprintf(os.Stderr, "MISSING EXPRESSION AFTER OPENING PARENTHESIS\n")
+			os.Exit(1)
+		}
 		expr()
-		if nextToken!=RIGHT_P {
+		if nextToken != RIGHT_P {
 			fmt.Fprintf(os.Stderr, "MISSING RIGHT PARENTHESIS\n")
 			os.Exit(1)
-		}else{
+		} else {
 			lex()
 		}
-	} else{ //var case
+	} else { //var case
 		lex()
 	}
-	print("Exit <pexpr>\n")
+	fmt.Fprintf(os.Stdout, "Exit <pexpr>\n")
 }
 
 func main() {
@@ -254,7 +267,7 @@ func main() {
 
 	fstream = bufio.NewReader(f) // Buffer for the reader
 
-	err = getChar()		//read first character
+	err = getChar() //read first character
 	checkError(err)
 
 	for err == nil && nextToken != EOF {
