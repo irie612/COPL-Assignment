@@ -51,7 +51,7 @@ const (
 //*************************************************************************
 
 // Function to read a given file byte for byte.
-// In the scenario that that the EOF is reached
+// In the scenario that the EOF is reached
 // return an error.
 func getChar() error {
 	var err error
@@ -64,8 +64,9 @@ func getChar() error {
 		} else {
 			charClass = UNKNOWN
 		}
-		return err
+		return err //we could probably get rid of it
 	} else {
+		charClass = UNKNOWN //Kinda ugly. Maybe could implement a new char class called EOF but it would be confusing
 		return errors.New("EOF Reached")
 	}
 }
@@ -111,7 +112,7 @@ func lex() int {
 	getNonBlank()
 
 	switch charClass {
-	case LETTER:		//if the lexeme starts with a letter nextToken is a variable
+	case LETTER: //if the lexeme starts with a letter nextToken is a variable
 		addChar()
 		getChar()
 		for charClass == LETTER || charClass == DIGIT {
@@ -121,7 +122,7 @@ func lex() int {
 		nextToken = VARIABLE
 		break
 
-	case DIGIT:  //if the lexeme starts with a digit there's an error
+	case DIGIT: //if the lexeme starts with a digit there's an error
 		fmt.Fprintf(os.Stderr, "Variable starts with digit \n")
 		os.Exit(1)
 		break
@@ -130,7 +131,6 @@ func lex() int {
 		lookup(nextChar)
 		getChar()
 		break
-
 
 	}
 
