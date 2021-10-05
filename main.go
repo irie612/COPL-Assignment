@@ -11,17 +11,13 @@ import (
 )
 
 //*************************************************************************
-/*
-TODO: figuring out merge conlifcts
-*/
-//*************************************************************************
 
 //Global Variables
 var fstream *bufio.Reader
 var lexeme [100]rune
 var nextChar rune
 var lexLen int
-var token int
+var dotCount int
 var nextToken int
 var charClass int
 var outputString string
@@ -55,14 +51,14 @@ const (
 // return an error.
 func getChar() error {
 	var err error
-	nextChar,_,err = fstream.ReadRune() //may be possible to implement support for UNICODE by using ReadRune
+	nextChar, _, err = fstream.ReadRune() //may be possible to implement support for UNICODE by using ReadRune
 	//print("IN GET CHAR. NEXT CHAR IS ",string(nextChar),"\n")
 
 	if err != io.EOF {
-		if unicode.IsLetter(nextChar) && nextChar != rune('λ'){
+		if unicode.IsLetter(nextChar) && nextChar != 'λ' {
 			//print("in get char ", string(nextChar) ,'\n')
 			charClass = LETTER
-		} else if unicode.IsDigit(rune(nextChar)) {
+		} else if unicode.IsDigit(nextChar) {
 			charClass = DIGIT
 		} else {
 
@@ -104,7 +100,7 @@ func checkError(err error) {
 //*************************************************************************
 
 func getNonBlank() {
-	for unicode.IsSpace(rune(nextChar)) && nextChar != '\n' {
+	for unicode.IsSpace(nextChar) && nextChar != '\n' {
 		getChar()
 	}
 }
@@ -166,7 +162,6 @@ func lookup(char rune) {
 		nextToken = RIGHT_P
 		break
 	case 'λ':
-		//print("CAZZO")
 		fallthrough
 	case '\\':
 		addChar()
@@ -246,6 +241,7 @@ func lexpr() {
 			addLexeme()
 			lex()
 			if nextToken == DOT {
+				dotCount++
 				appendToOutputStr("(") //TODO add closing parenthesis when there is a dot
 				lex()
 			} else if nextToken == VARIABLE {
