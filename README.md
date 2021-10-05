@@ -16,7 +16,7 @@ The program works correctly on most parts. Aspects that may be called defiencies
 There are no deviations from the assignment.
 
 
-
+______________________________________________________________________________________________________________________________________________
 
 
 The program is a parser for LL grammar using recursive descent. It starts in the main function, which can be seen as the main driver of the whole program. Here, we first check whether an argument is given which contains an acceptable textfile. If so, then the program will parse the textfile until the EOF. The parsing begins in the parse function. This function first performs lexical analysis onto first character of the line, with the help of the lex() function. The lex() function essentially determines what the token is from the first nonblank character: variable, digit, or UNKNOWN. If it's unknown then another function in the lex() function is called, to resolve what token it is, based on its character. 
