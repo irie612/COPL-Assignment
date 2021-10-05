@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"io"
 	"os"
+	"strings"
 	"unicode"
 )
 
@@ -24,6 +25,7 @@ var token int
 var nextToken int
 var charClass int
 var outputString string
+var exprSartPos int
 
 //*************************************************************************
 
@@ -144,9 +146,10 @@ func clearLexeme() {
 	}
 }
 
-func addLexeme(){
-	outputString = outputString + string(lexeme[:])
+func addLexeme() {
+	outputString += string(lexeme[:lexLen])
 }
+
 //*************************************************************************
 //assigns nextToken BASED on the character.
 func lookup(char byte) {
@@ -185,8 +188,17 @@ func lookup(char byte) {
 
 //*************************************************************************
 
+func matchParenthesis() {
+	var noOpen = strings.Count(outputString, "(")
+	var noClose = strings.Count(outputString, ")")
+	for noClose > noOpen {
+		outputString = outputString[:exprSartPos] + "(" + outputString[exprSartPos:]
+		noOpen++
+	}
+}
+
 func parse() {
-	outputString= ""
+	outputString = ""
 	lex()
 	if nextToken == EOF {
 		return
@@ -201,8 +213,10 @@ func parse() {
 
 func expr() {
 	fmt.Fprintf(os.Stdout, "Enter <expr>\n")
+	exprSartPos = len(outputString)
 	lexpr()
 	expr_p()
+	matchParenthesis()
 	fmt.Fprintf(os.Stdout, "Exit <expr>\n")
 }
 
@@ -240,6 +254,10 @@ func lexpr() {
 	fmt.Fprintf(os.Stdout, "Exit <lexpr>\n")
 }
 
+func addParenthesis(b string) {
+	outputString += b
+}
+
 func pexpr() {
 	fmt.Fprintf(os.Stdout, "Enter <pexpr>\n")
 	if nextToken == LEFT_P {
@@ -260,9 +278,13 @@ func pexpr() {
 	} else { //var case
 		addLexeme()
 		lex()
+		if nextToken == VARIABLE {
+			addParenthesis(")")
+		}
 	}
 	fmt.Fprintf(os.Stdout, "Exit <pexpr>\n")
 }
+
 //*************************************************************************
 func main() {
 	if len(os.Args) < 2 {
