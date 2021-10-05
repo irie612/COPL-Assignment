@@ -10,8 +10,8 @@ AUTHOR(S): Emanuele Greco (s3375951), Irie Railton (s3292037) & Kah Ming wong (s
 
 
 
-The program works correctly on most parts. Aspects that may be called defiencies are:
-- The output is does not contain the least amount of brackets.
+The program works correctly on most parts. Aspects that may be called deficiencies are:
+- The output does not contain the least amount of brackets.
 
 There are no deviations from the assignment.
 
