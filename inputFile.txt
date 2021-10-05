@@ -2,4 +2,5 @@
 abc
 a b c
 a (b c)
+(\ x a b)
 (\x((a) (b)))
