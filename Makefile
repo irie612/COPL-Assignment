@@ -3,4 +3,4 @@ build:
 
 run:
 	go build -o main main.go
-	./main
+	./main ${file}
