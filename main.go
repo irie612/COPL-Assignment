@@ -236,7 +236,10 @@ func lexpr() {
 		if nextToken == VARIABLE { //check if we have a variable after the lambda
 			addLexeme()
 			lex()
-			if nextToken == VARIABLE {
+			if nextToken == DOT {
+				appendToOutputStr("(") //TODO add closing parenthesis when there is a dot
+				lex()
+			} else if nextToken == VARIABLE {
 				appendToOutputStr(" ")
 			}
 			if nextToken != EOL && nextToken != EOF {
