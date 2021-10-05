@@ -25,7 +25,6 @@ var token int
 var nextToken int
 var charClass int
 var outputString string
-var exprSartPos int
 
 //*************************************************************************
 
@@ -188,11 +187,11 @@ func lookup(char byte) {
 
 //*************************************************************************
 
-func matchParenthesis() {
+func matchParenthesis(startPos int) {
 	var noOpen = strings.Count(outputString, "(")
 	var noClose = strings.Count(outputString, ")")
 	for noClose > noOpen {
-		outputString = outputString[:exprSartPos] + "(" + outputString[exprSartPos:]
+		outputString = outputString[:startPos] + "(" + outputString[startPos:]
 		noOpen++
 	}
 }
@@ -213,10 +212,10 @@ func parse() {
 
 func expr() {
 	fmt.Fprintf(os.Stdout, "Enter <expr>\n")
-	exprSartPos = len(outputString)
+	var exprStartPos = len(outputString)
 	lexpr()
 	expr_p()
-	matchParenthesis()
+	matchParenthesis(exprStartPos)
 	fmt.Fprintf(os.Stdout, "Exit <expr>\n")
 }
 
@@ -238,6 +237,9 @@ func lexpr() {
 		if nextToken == VARIABLE { //check if we have a variable after the lambda
 			addLexeme()
 			lex()
+			if nextToken == VARIABLE {
+				appendToOutputStr(" ")
+			}
 			if nextToken != EOL && nextToken != EOF {
 				lexpr()
 			} else {
@@ -254,7 +256,7 @@ func lexpr() {
 	fmt.Fprintf(os.Stdout, "Exit <lexpr>\n")
 }
 
-func addParenthesis(b string) {
+func appendToOutputStr(b string) {
 	outputString += b
 }
 
@@ -279,7 +281,7 @@ func pexpr() {
 		addLexeme()
 		lex()
 		if nextToken == VARIABLE {
-			addParenthesis(")")
+			appendToOutputStr(")")
 		}
 	}
 	fmt.Fprintf(os.Stdout, "Exit <pexpr>\n")
