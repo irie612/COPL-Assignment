@@ -135,7 +135,7 @@ func lex() int {
 
 	}
 
-	fmt.Fprintf(os.Stdout, "Next token is: %d, next lexeme is %s \n", nextToken, lexeme)
+	//fmt.Fprintf(os.Stdout, "Next token is: %d, next lexeme is %s \n", nextToken, lexeme)
 	return nextToken
 }
 
@@ -174,7 +174,6 @@ func lookup(char byte) {
 		lexeme[2] = 'L'
 		lexeme[3] = 0
 		nextToken = EOL
-
 	default:
 		lexeme[0] = 'E'
 		lexeme[1] = 'O'
@@ -188,8 +187,8 @@ func lookup(char byte) {
 //*************************************************************************
 
 func matchParenthesis(startPos int) {
-	var noOpen = strings.Count(outputString, "(")
-	var noClose = strings.Count(outputString, ")")
+	var noOpen = strings.Count(outputString[startPos:], "(")
+	var noClose = strings.Count(outputString[startPos:], ")")
 	for noClose > noOpen {
 		outputString = outputString[:startPos] + "(" + outputString[startPos:]
 		noOpen++
@@ -211,26 +210,26 @@ func parse() {
 }
 
 func expr() {
-	fmt.Fprintf(os.Stdout, "Enter <expr>\n")
+	//fmt.Fprintf(os.Stdout, "Enter <expr>\n")
 	var exprStartPos = len(outputString)
 	lexpr()
 	expr_p()
 	matchParenthesis(exprStartPos)
-	fmt.Fprintf(os.Stdout, "Exit <expr>\n")
+	//fmt.Fprintf(os.Stdout, "Exit <expr>\n")
 }
 
 func expr_p() {
-	fmt.Fprintf(os.Stdout, "Enter <expr_p>\n")
+	//fmt.Fprintf(os.Stdout, "Enter <expr_p>\n")
 
 	if !(nextToken == EOF || nextToken == EOL || nextToken == RIGHT_P) {
 		lexpr()
 		expr_p()
 	}
-	fmt.Fprintf(os.Stdout, "Exit <expr_p>\n")
+	//fmt.Fprintf(os.Stdout, "Exit <expr_p>\n")
 }
 
 func lexpr() {
-	fmt.Fprintf(os.Stdout, "Enter <lexpr>\n")
+	//fmt.Fprintf(os.Stdout, "Enter <lexpr>\n")
 	if nextToken == LAMBDA { //check if we have a lambda abstraction
 		addLexeme()
 		lex()
@@ -253,7 +252,7 @@ func lexpr() {
 	} else {
 		pexpr()
 	}
-	fmt.Fprintf(os.Stdout, "Exit <lexpr>\n")
+	//fmt.Fprintf(os.Stdout, "Exit <lexpr>\n")
 }
 
 func appendToOutputStr(b string) {
@@ -261,7 +260,7 @@ func appendToOutputStr(b string) {
 }
 
 func pexpr() {
-	fmt.Fprintf(os.Stdout, "Enter <pexpr>\n")
+	//fmt.Fprintf(os.Stdout, "Enter <pexpr>\n")
 	if nextToken == LEFT_P {
 		addLexeme()
 		lex()
@@ -280,11 +279,11 @@ func pexpr() {
 	} else { //var case
 		addLexeme()
 		lex()
-		if nextToken == VARIABLE {
+		if nextToken == VARIABLE || nextToken == LEFT_P {
 			appendToOutputStr(")")
 		}
 	}
-	fmt.Fprintf(os.Stdout, "Exit <pexpr>\n")
+	//fmt.Fprintf(os.Stdout, "Exit <pexpr>\n")
 }
 
 //*************************************************************************
@@ -308,7 +307,7 @@ func main() {
 	for err == nil && nextToken != EOF {
 		parse()
 		if nextToken == EOL {
-			fmt.Fprintf(os.Stdout, "END OF LINE\n")
+			//fmt.Fprintf(os.Stdout, "END OF LINE\n")
 		}
 	}
 }
