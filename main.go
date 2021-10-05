@@ -18,8 +18,8 @@ TODO: figuring out merge conlifcts
 
 //Global Variables
 var fstream *bufio.Reader
-var lexeme [100]byte
-var nextChar byte
+var lexeme [100]rune
+var nextChar rune
 var lexLen int
 var token int
 var nextToken int
@@ -55,13 +55,17 @@ const (
 // return an error.
 func getChar() error {
 	var err error
-	nextChar, err = fstream.ReadByte() //may be possible to implement support for UNICODE by using ReadRune
+	nextChar,_,err = fstream.ReadRune() //may be possible to implement support for UNICODE by using ReadRune
+	//print("IN GET CHAR. NEXT CHAR IS ",string(nextChar),"\n")
+
 	if err != io.EOF {
-		if unicode.IsLetter(rune(nextChar)) {
+		if unicode.IsLetter(nextChar) && nextChar != rune('λ'){
+			//print("in get char ", string(nextChar) ,'\n')
 			charClass = LETTER
 		} else if unicode.IsDigit(rune(nextChar)) {
 			charClass = DIGIT
 		} else {
+
 			charClass = UNKNOWN
 		}
 		return err //we could probably get rid of it
@@ -75,6 +79,7 @@ func getChar() error {
 
 // add char to the lexeme
 func addChar() {
+	//print("IN ADD CHAR. NEXT CHAR IS ",string(nextChar),"\n")
 	if lexLen < 99 {
 		lexeme[lexLen] = nextChar
 		lexLen++
@@ -107,7 +112,7 @@ func getNonBlank() {
 //*************************************************************************
 
 // Function that assigns nextToken and lexeme
-func lex() int {
+func lex() {
 	clearLexeme()
 	lexLen = 0
 	getNonBlank()
@@ -135,8 +140,7 @@ func lex() int {
 
 	}
 
-	//fmt.Fprintf(os.Stdout, "Next token is: %d, next lexeme is %s \n", nextToken, lexeme)
-	return nextToken
+	//fmt.Fprintf(os.Stdout, "Next token is: %d, next lexeme is %s \n", nextToken, string(lexeme[:]))
 }
 
 func clearLexeme() {
@@ -151,7 +155,7 @@ func addLexeme() {
 
 //*************************************************************************
 //assigns nextToken BASED on the character.
-func lookup(char byte) {
+func lookup(char rune) {
 	switch char {
 	case '(':
 		addChar()
@@ -161,6 +165,9 @@ func lookup(char byte) {
 		addChar()
 		nextToken = RIGHT_P
 		break
+	case 'λ':
+		//print("CAZZO")
+		fallthrough
 	case '\\':
 		addChar()
 		nextToken = LAMBDA
@@ -168,12 +175,14 @@ func lookup(char byte) {
 	case '.':
 		addChar()
 		nextToken = DOT
+		break
 	case '\n':
 		lexeme[0] = 'E'
 		lexeme[1] = 'O'
 		lexeme[2] = 'L'
 		lexeme[3] = 0
 		nextToken = EOL
+		break
 	default:
 		lexeme[0] = 'E'
 		lexeme[1] = 'O'
