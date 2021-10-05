@@ -11,10 +11,6 @@ import (
 )
 
 //*************************************************************************
-/*
-TODO: figuring out merge conlifcts
-*/
-//*************************************************************************
 
 //Global Variables
 var fstream *bufio.Reader
@@ -55,14 +51,13 @@ const (
 // return an error.
 func getChar() error {
 	var err error
-	nextChar,_,err = fstream.ReadRune() //may be possible to implement support for UNICODE by using ReadRune
-	//print("IN GET CHAR. NEXT CHAR IS ",string(nextChar),"\n")
+	nextChar, _, err = fstream.ReadRune() //may be possible to implement support for UNICODE by using ReadRune
 
 	if err != io.EOF {
-		if unicode.IsLetter(nextChar) && nextChar != rune('λ'){
+		if unicode.IsLetter(nextChar) && nextChar != 'λ' {
 			//print("in get char ", string(nextChar) ,'\n')
 			charClass = LETTER
-		} else if unicode.IsDigit(rune(nextChar)) {
+		} else if unicode.IsDigit(nextChar) {
 			charClass = DIGIT
 		} else {
 
@@ -79,7 +74,6 @@ func getChar() error {
 
 // add char to the lexeme
 func addChar() {
-	//print("IN ADD CHAR. NEXT CHAR IS ",string(nextChar),"\n")
 	if lexLen < 99 {
 		lexeme[lexLen] = nextChar
 		lexLen++
@@ -104,7 +98,7 @@ func checkError(err error) {
 //*************************************************************************
 
 func getNonBlank() {
-	for unicode.IsSpace(rune(nextChar)) && nextChar != '\n' {
+	for unicode.IsSpace(nextChar) && nextChar != '\n' {
 		getChar()
 	}
 }
@@ -139,8 +133,6 @@ func lex() {
 		break
 
 	}
-
-	//fmt.Fprintf(os.Stdout, "Next token is: %d, next lexeme is %s \n", nextToken, string(lexeme[:]))
 }
 
 func clearLexeme() {
@@ -166,7 +158,6 @@ func lookup(char rune) {
 		nextToken = RIGHT_P
 		break
 	case 'λ':
-		//print("CAZZO")
 		fallthrough
 	case '\\':
 		addChar()
@@ -219,26 +210,20 @@ func parse() {
 }
 
 func expr() {
-	//fmt.Fprintf(os.Stdout, "Enter <expr>\n")
 	var exprStartPos = len(outputString)
 	lexpr()
 	expr_p()
 	matchParenthesis(exprStartPos)
-	//fmt.Fprintf(os.Stdout, "Exit <expr>\n")
 }
 
 func expr_p() {
-	//fmt.Fprintf(os.Stdout, "Enter <expr_p>\n")
-
 	if !(nextToken == EOF || nextToken == EOL || nextToken == RIGHT_P) {
 		lexpr()
 		expr_p()
 	}
-	//fmt.Fprintf(os.Stdout, "Exit <expr_p>\n")
 }
 
 func lexpr() {
-	//fmt.Fprintf(os.Stdout, "Enter <lexpr>\n")
 	if nextToken == LAMBDA { //check if we have a lambda abstraction
 		addLexeme()
 		lex()
@@ -261,7 +246,6 @@ func lexpr() {
 	} else {
 		pexpr()
 	}
-	//fmt.Fprintf(os.Stdout, "Exit <lexpr>\n")
 }
 
 func appendToOutputStr(b string) {
@@ -269,7 +253,6 @@ func appendToOutputStr(b string) {
 }
 
 func pexpr() {
-	//fmt.Fprintf(os.Stdout, "Enter <pexpr>\n")
 	if nextToken == LEFT_P {
 		addLexeme()
 		lex()
@@ -292,7 +275,6 @@ func pexpr() {
 			appendToOutputStr(")")
 		}
 	}
-	//fmt.Fprintf(os.Stdout, "Exit <pexpr>\n")
 }
 
 //*************************************************************************
@@ -316,7 +298,6 @@ func main() {
 	for err == nil && nextToken != EOF {
 		parse()
 		if nextToken == EOL {
-			//fmt.Fprintf(os.Stdout, "END OF LINE\n")
 		}
 	}
 }
