@@ -1,14 +1,22 @@
 YEAR: 2021-2022
+
 COURSE: CONCEPTS OF PROGRAMMING LANGUAGES (ASSIGNMENT 1)
+
 CLASS: 2
+
 GROUP: 11
+
 AUTHOR(S): Emanuele Greco (s3375951), Irie Railton (s3292037) & Kah Ming wong (s2641976)
+
 
 
 The program works correctly on most parts. Aspects that may be called defiencies are:
 - The output is does not contain the least amount of brackets.
 
 There are no deviations from the assignment.
+
+
+
 
 
 The program is a parser for LL grammar using recursive descent. It starts in the main function, which can be seen as the main driver of the whole program. Here, we first check whether an argument is given which contains an acceptable textfile. If so, then the program will parse the textfile until the EOF. The parsing begins in the parse function. This function first performs lexical analysis onto first character of the line, with the help of the lex() function. The lex() function essentially determines what the token is from the first nonblank character: variable, digit, or UNKNOWN. If it's unknown then another function in the lex() function is called, to resolve what token it is, based on its character. 
