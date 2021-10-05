@@ -279,7 +279,7 @@ func pexpr() {
 	} else { //var case
 		addLexeme()
 		lex()
-		if nextToken == VARIABLE || nextToken == LEFT_P {
+		if nextToken == VARIABLE || nextToken == LEFT_P || nextToken == LAMBDA {
 			appendToOutputStr(")")
 		}
 	}
