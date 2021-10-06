@@ -46,15 +46,14 @@ const (
 
 //*************************************************************************
 
-//Function to read a given file byte for byte and set the appropriate 
-//charClass. In the scenario that the EOF is reached return an error. 
+//Function to read a given file byte for byte and set the appropriate
+//charClass. In the scenario that the EOF is reached return an error.
 func getChar() error {
 	var err error
 	nextChar, _, err = fstream.ReadRune()
 
 	if err != io.EOF {
 		if unicode.IsLetter(nextChar) && nextChar != 'λ' {
-			//print("in get char ", string(nextChar) ,'\n')
 			charClass = LETTER
 		} else if unicode.IsDigit(nextChar) {
 			charClass = DIGIT
@@ -72,7 +71,6 @@ func getChar() error {
 
 //add char to the lexeme
 func addChar() {
-	//print("IN ADD CHAR. NEXT CHAR IS ",string(nextChar),"\n")
 	if lexLen < 99 {
 		lexeme[lexLen] = nextChar
 		lexLen++
@@ -213,25 +211,20 @@ func matchParenthesis(startPos int) {
 
 //Finds valid expressions
 func expr() {
-	//fmt.Fprintf(os.Stdout, "Enter <expr>\n")
 	var exprStartPos = len(outputString)
 	lexpr()
 	expr_p()
 	matchParenthesis(exprStartPos)
-	//fmt.Fprintf(os.Stdout, "Exit <expr>\n")
 }
 
 //*************************************************************************
 
 //Finds valid expr_p expressions. May be "empty"
 func expr_p() {
-	//fmt.Fprintf(os.Stdout, "Enter <expr_p>\n")
-
 	if !(nextToken == EOF || nextToken == EOL || nextToken == RIGHT_P) {
 		lexpr()
 		expr_p()
 	}
-	//fmt.Fprintf(os.Stdout, "Exit <expr_p>\n")
 }
 
 //*************************************************************************
@@ -239,12 +232,11 @@ func expr_p() {
 //Finds valid lambda abstractions. If there's no lambda abstractions,
 //continue to pexpr.
 func lexpr() {
-	//fmt.Fprintf(os.Stdout, "Enter <lexpr>\n")
 	if nextToken == LAMBDA { //check if we have a lambda abstraction
 		addLexeme()
 		lex()
-		if nextToken == VARIABLE {	//check if we have a variable 
-			addLexeme()								//after the lambda 
+		if nextToken == VARIABLE { //check if we have a variable
+			addLexeme() //after the lambda
 			lex()
 			if nextToken == DOT {
 				dotCount++
@@ -256,8 +248,8 @@ func lexpr() {
 			if nextToken != EOL && nextToken != EOF {
 				lexpr()
 			} else {
-				fmt.Fprintf(os.Stderr, 
-				"MISSING EXPRESSION AFTER LAMBDA ABSTRACTION\n")
+				fmt.Fprintf(os.Stderr,
+					"MISSING EXPRESSION AFTER LAMBDA ABSTRACTION\n")
 				os.Exit(1)
 			}
 		} else { // nextToken != VARIABLE ERROR
@@ -267,20 +259,18 @@ func lexpr() {
 	} else {
 		pexpr()
 	}
-	//fmt.Fprintf(os.Stdout, "Exit <lexpr>\n")
 }
 
 //*************************************************************************
 
 //Looks for a valid pexpr expression.
 func pexpr() {
-	//fmt.Fprintf(os.Stdout, "Enter <pexpr>\n")
 	if nextToken == LEFT_P {
 		addLexeme()
 		lex()
 		if nextToken == RIGHT_P {
-			fmt.Fprintf(os.Stderr, 
-			"MISSING EXPRESSION AFTER OPENING PARENTHESIS\n")
+			fmt.Fprintf(os.Stderr,
+				"MISSING EXPRESSION AFTER OPENING PARENTHESIS\n")
 			os.Exit(1)
 		}
 		expr()
@@ -294,17 +284,16 @@ func pexpr() {
 	} else { //var case
 		addLexeme()
 		lex()
-		if nextToken == VARIABLE || nextToken == LEFT_P || 
-		nextToken == LAMBDA {
+		if nextToken == VARIABLE || nextToken == LEFT_P ||
+			nextToken == LAMBDA {
 			appendToOutputStr(")")
 		}
 	}
-	//fmt.Fprintf(os.Stdout, "Exit <pexpr>\n")
 }
 
 //*************************************************************************
 
-//Parses each line in the text file, and outputs the parsed string 
+//Parses each line in the text file, and outputs the parsed string
 //given that no errors has been encountered.
 func parse() {
 	outputString = ""
@@ -330,16 +319,13 @@ func main() {
 	} // Check whether an argument (text file) is given
 
 	f, err := os.Open(os.Args[1]) // Opens file
-	checkError(err)	// Checks whether file is valid
-	fstream = bufio.NewReader(f) // Buffer for the reader
+	checkError(err)               // Checks whether file is valid
+	fstream = bufio.NewReader(f)  // Buffer for the reader
 
 	err = getChar() //read first character
 	checkError(err)
 
 	for err == nil && nextToken != EOF {
 		parse()
-		if nextToken == EOL {
-			//fmt.Fprintf(os.Stdout, "END OF LINE\n")
-		}
 	}
 }
