@@ -12,6 +12,7 @@ AUTHOR(S): Emanuele Greco (s3375951), Irie Railton (s3292037) & Kah Ming wong (s
 
 The program works correctly on most parts. Aspects that may be called deficiencies are:
 - The output does not contain the least amount of brackets.
+- The program is able to recognize a dot as a token. However, does not recognize it as a part of a lambda abstraction, and therefore, does not correctly parse a sentence with a dot in it into a correct output.
 
 There are no deviations from the assignment. It correctly recognizes Unicode characters, and it will consider the greek lambda character as a part of the lambda abstraction.
 
