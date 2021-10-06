@@ -46,33 +46,30 @@ const (
 
 //*************************************************************************
 
-// Function to read a given file byte for byte and set the appropriate charClass
-// In the scenario that the EOF is reached
-// return an error.
+//Function to read a given file byte for byte and set the appropriate
+//charClass. In the scenario that the EOF is reached return an error.
 func getChar() error {
 	var err error
-	nextChar, _, err = fstream.ReadRune() //may be possible to implement support for UNICODE by using ReadRune
+	nextChar, _, err = fstream.ReadRune()
 
 	if err != io.EOF {
 		if unicode.IsLetter(nextChar) && nextChar != 'λ' {
-			//print("in get char ", string(nextChar) ,'\n')
 			charClass = LETTER
 		} else if unicode.IsDigit(nextChar) {
 			charClass = DIGIT
 		} else {
-
 			charClass = UNKNOWN
 		}
 		return err //we could probably get rid of it
 	} else {
-		charClass = UNKNOWN //Kinda ugly. Maybe could implement a new char class called EOF but it would be confusing
+		charClass = UNKNOWN
 		return errors.New("EOF Reached")
 	}
 }
 
 //*************************************************************************
 
-// add char to the lexeme
+//add char to the lexeme
 func addChar() {
 	if lexLen < 99 {
 		lexeme[lexLen] = nextChar
@@ -86,8 +83,8 @@ func addChar() {
 
 //*************************************************************************
 
-// Checks if the programs gives an error, if so
-// quit the program with the return value 1.
+//Checks if the programs gives an error, if so
+//quit the program with the return value 1.
 func checkError(err error) {
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "%s\n", err)
@@ -105,7 +102,7 @@ func getNonBlank() {
 
 //*************************************************************************
 
-// Function that assigns nextToken and lexeme
+//Function that assigns nextToken and lexeme
 func lex() {
 	clearLexeme()
 	lexLen = 0
@@ -121,32 +118,20 @@ func lex() {
 		}
 		nextToken = VARIABLE
 		break
-
 	case DIGIT: //if the lexeme starts with a digit there's an error
 		fmt.Fprintf(os.Stderr, "Variable starts with digit \n")
 		os.Exit(1)
 		break
-
-	case UNKNOWN: // any other case
+	case UNKNOWN: //any other case
 		lookup(nextChar)
 		getChar()
 		break
-
 	}
-}
-
-func clearLexeme() {
-	for i := range lexeme {
-		lexeme[i] = 0
-	}
-}
-
-func addLexeme() {
-	outputString += string(lexeme[:lexLen])
 }
 
 //*************************************************************************
-//assigns nextToken BASED on the character.
+
+//Assigns nextToken BASED on the character.
 func lookup(char rune) {
 	switch char {
 	case '(':
@@ -186,6 +171,31 @@ func lookup(char rune) {
 
 //*************************************************************************
 
+//Clears lexeme rune array.
+func clearLexeme() {
+	for i := range lexeme {
+		lexeme[i] = 0
+	}
+}
+
+//*************************************************************************
+
+//Adds lexeme to outputString
+func addLexeme() {
+	outputString += string(lexeme[:lexLen])
+}
+
+//*************************************************************************
+
+//Appends string <b> to outputString
+func appendToOutputStr(b string) {
+	outputString += b
+}
+
+//*************************************************************************
+
+//Resolves matching left parentheses in instances where there are more
+//right parentheses.
 func matchParenthesis(startPos int) {
 	var noOpen = strings.Count(outputString[startPos:], "(")
 	var noClose = strings.Count(outputString[startPos:], ")")
@@ -195,6 +205,90 @@ func matchParenthesis(startPos int) {
 	}
 }
 
+//*************************************************************************
+
+//Finds valid expressions
+func expr() {
+	var exprStartPos = len(outputString)
+	lexpr()
+	expr_p()
+	matchParenthesis(exprStartPos)
+}
+
+//*************************************************************************
+
+//Finds valid expr_p expressions. May be "empty"
+func expr_p() {
+	if !(nextToken == EOF || nextToken == EOL || nextToken == RIGHT_P) {
+		lexpr()
+		expr_p()
+	}
+}
+
+//*************************************************************************
+
+//Finds valid lambda abstractions. If there's no lambda abstractions,
+//continue to pexpr.
+func lexpr() {
+	if nextToken == LAMBDA { //check if we have a lambda abstraction
+		addLexeme()
+		lex()
+		if nextToken == VARIABLE { //check if we have a variable
+			addLexeme() //after the lambda
+			lex()
+			if nextToken == VARIABLE {
+				appendToOutputStr(" ")
+			}
+			if nextToken != EOL && nextToken != EOF {
+				lexpr()
+			} else {
+				fmt.Fprintf(os.Stderr,
+					"MISSING EXPRESSION AFTER LAMBDA ABSTRACTION\n")
+				os.Exit(1)
+			}
+		} else { // nextToken != VARIABLE ERROR
+			fmt.Fprintf(os.Stderr, "NO VARIABLE AFTER LAMBDA TOKEN\n")
+			os.Exit(1)
+		}
+	} else {
+		pexpr()
+	}
+}
+
+//*************************************************************************
+
+//Looks for a valid pexpr expression.
+func pexpr() {
+	if nextToken == LEFT_P {
+		addLexeme()
+		lex()
+		if nextToken == RIGHT_P {
+			fmt.Fprintf(os.Stderr,
+				"MISSING EXPRESSION AFTER OPENING PARENTHESIS\n")
+			os.Exit(1)
+		}
+		expr()
+		addLexeme()
+		if nextToken != RIGHT_P {
+			fmt.Fprintf(os.Stderr, "MISSING CLOSING PARENTHESIS\n")
+			os.Exit(1)
+		} else {
+			lex()
+		}
+	} else { //var case
+		addLexeme()
+		lex()
+		if nextToken == VARIABLE || nextToken == LEFT_P ||
+			nextToken == LAMBDA {
+			appendToOutputStr(")")
+		}
+	}
+}
+
+//*************************************************************************
+
+//Parses each line in the text file, and outputs the parsed string
+//given that no errors has been encountered.
 func parse() {
 	outputString = ""
 	lex()
@@ -209,95 +303,23 @@ func parse() {
 	fmt.Fprintf(os.Stdout, "OUTPUT STRING IS: %s\n", outputString)
 }
 
-func expr() {
-	var exprStartPos = len(outputString)
-	lexpr()
-	expr_p()
-	matchParenthesis(exprStartPos)
-}
-
-func expr_p() {
-	if !(nextToken == EOF || nextToken == EOL || nextToken == RIGHT_P) {
-		lexpr()
-		expr_p()
-	}
-}
-
-func lexpr() {
-	if nextToken == LAMBDA { //check if we have a lambda abstraction
-		addLexeme()
-		lex()
-		if nextToken == VARIABLE { //check if we have a variable after the lambda
-			addLexeme()
-			lex()
-			if nextToken == VARIABLE {
-				appendToOutputStr(" ")
-			}
-			if nextToken != EOL && nextToken != EOF {
-				lexpr()
-			} else {
-				fmt.Fprintf(os.Stderr, "MISSING EXPRESSION AFTER LAMBDA ABSTRACTION\n")
-				os.Exit(1)
-			}
-		} else { // nextToken != VARIABLE ERROR
-			fmt.Fprintf(os.Stderr, "NO VARIABLE AFTER LAMBDA TOKEN\n")
-			os.Exit(1)
-		}
-	} else {
-		pexpr()
-	}
-}
-
-func appendToOutputStr(b string) {
-	outputString += b
-}
-
-func pexpr() {
-	if nextToken == LEFT_P {
-		addLexeme()
-		lex()
-		if nextToken == RIGHT_P {
-			fmt.Fprintf(os.Stderr, "MISSING EXPRESSION AFTER OPENING PARENTHESIS\n")
-			os.Exit(1)
-		}
-		expr()
-		addLexeme()
-		if nextToken != RIGHT_P {
-			fmt.Fprintf(os.Stderr, "MISSING CLOSING PARENTHESIS\n")
-			os.Exit(1)
-		} else {
-			lex()
-		}
-	} else { //var case
-		addLexeme()
-		lex()
-		if nextToken == VARIABLE || nextToken == LEFT_P || nextToken == LAMBDA {
-			appendToOutputStr(")")
-		}
-	}
-}
-
 //*************************************************************************
+
+// Main driver of the parsing
 func main() {
 	if len(os.Args) < 2 {
 		fmt.Fprintf(os.Stderr, "No arguments given. \n")
 		os.Exit(1)
-	} // Given a program that has exactly 1 argument
-	// then the length of the "argument" should be 2.
-	// As the first argument is the command program itself, and the
-	// second the actual argument.
+	} // Check whether an argument (text file) is given
 
 	f, err := os.Open(os.Args[1]) // Opens file
-	checkError(err)
-
-	fstream = bufio.NewReader(f) // Buffer for the reader
+	checkError(err)               // Checks whether file is valid
+	fstream = bufio.NewReader(f)  // Buffer for the reader
 
 	err = getChar() //read first character
 	checkError(err)
 
 	for err == nil && nextToken != EOF {
 		parse()
-		if nextToken == EOL {
-		}
 	}
 }
