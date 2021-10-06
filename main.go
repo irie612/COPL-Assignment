@@ -17,7 +17,6 @@ var fstream *bufio.Reader
 var lexeme [100]rune
 var nextChar rune
 var lexLen int
-var token int
 var nextToken int
 var charClass int
 var outputString string
@@ -37,7 +36,7 @@ const (
 
 //*************************************************************************
 
-// Character Classes.
+//Character Classes.
 const (
 	LETTER = iota + 10
 	DIGIT
@@ -60,7 +59,7 @@ func getChar() error {
 		} else {
 			charClass = UNKNOWN
 		}
-		return err //we could probably get rid of it
+		return err
 	} else {
 		charClass = UNKNOWN
 		return errors.New("EOF Reached")
@@ -69,7 +68,7 @@ func getChar() error {
 
 //*************************************************************************
 
-//add char to the lexeme
+//Add char to the lexeme.
 func addChar() {
 	if lexLen < 99 {
 		lexeme[lexLen] = nextChar
@@ -94,6 +93,7 @@ func checkError(err error) {
 
 //*************************************************************************
 
+//Gets the first nonblank character, but can also be a newline char.
 func getNonBlank() {
 	for unicode.IsSpace(nextChar) && nextChar != '\n' {
 		getChar()
@@ -305,7 +305,7 @@ func parse() {
 
 //*************************************************************************
 
-// Main driver of the parsing
+//Main driver of the parsing
 func main() {
 	if len(os.Args) < 2 {
 		fmt.Fprintf(os.Stderr, "No arguments given. \n")
@@ -322,4 +322,7 @@ func main() {
 	for err == nil && nextToken != EOF {
 		parse()
 	}
-}
+	os.Exit(0)	//exits the program with status 0 when everything is
+}							//parsed correctly.
+
+//*************************************************************************
