@@ -14,21 +14,21 @@ import (
 
 //Global Variables
 var fstream *bufio.Reader
-var lexeme [100]rune
-var nextChar rune
-var lexLen int
-var nextToken int
-var charClass int
-var outputString string
+var lexeme [100]rune //the lexeme for each token
+var nextChar rune //the current char in the file
+var lexLen int	//the current length of the lexeme
+var nextToken int	//the current token
+var charClass int	//classification of the current char
+var outputString string //the final output for the parsing	
 
 //*************************************************************************
 
 //Tokens
 const (
-	EOF    = -2
-	EOL    = -1
-	LEFT_P = iota
-	RIGHT_P
+	EOF    = -2	//end of file
+	EOL    = -1	//end of line
+	LEFT_P = iota	//left parenthesis
+	RIGHT_P	//right parenthesis
 	LAMBDA
 	VARIABLE
 	DOT
@@ -233,8 +233,8 @@ func lexpr() {
 	if nextToken == LAMBDA { //check if we have a lambda abstraction
 		addLexeme()
 		lex()
-		if nextToken == VARIABLE { //check if we have a variable
-			addLexeme() //after the lambda
+		if nextToken == VARIABLE {	//check if we have a variable
+			addLexeme() 			//after the lambda
 			lex()
 			if nextToken == VARIABLE {
 				appendToOutputStr(" ")
@@ -321,8 +321,8 @@ func main() {
 
 	for err == nil && nextToken != EOF {
 		parse()
-	}
+	}//parses each line until EOF
 	os.Exit(0)	//exits the program with status 0 when everything is
-}							//parsed correctly.
+}				//parsed correctly.
 
 //*************************************************************************
