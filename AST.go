@@ -292,14 +292,14 @@ func checkReduction (theNode *node) bool {
 	giveBoundVars(theNode, &boundVars)
 	for i := range boundVars {
 		theByte := boundVars[i]
-		fmt.Fprintf(os.Stdout,  "bound %c \n\n", theByte)
+		fmt.Fprintf(os.Stdout,  "bound %c \n", theByte)
 	}
 
 	freeVars := []rune{}
 	giveFreeVars(theNode, &freeVars)
 	for i := range freeVars {
 		theByte := freeVars[i]
-		fmt.Fprintf(os.Stdout,  "free %c \n\n", theByte)
+		fmt.Fprintf(os.Stdout,  "free %c \n", theByte)
 	}
 
 //	if (betaReduce(theNode)) {
@@ -323,10 +323,35 @@ func testAha (theNode *node) {
 
 //*************************************************************************
 
+func printPostOrder(theNode *node) {
+	if (theNode == nil) {
+		return
+	}
+	if (theNode.token == LAMBDA) {
+		fmt.Fprintf(os.Stdout, "(")
+	}
+
+	if (theNode.token == LAMBDA) {
+		fmt.Fprintf(os.Stdout, "λ%s ", theNode.value)
+	} else if (theNode.token == VARIABLE) {
+		fmt.Fprintf(os.Stdout, "%s", theNode.value)
+	}
+
+	if (theNode.left != nil && theNode.right != nil) {
+		fmt.Fprintf(os.Stdout, "(")
+	}
+	printPostOrder(theNode.left)
+	printPostOrder(theNode.right)
+	if (theNode.token == LAMBDA || (theNode.left != nil && theNode.right != nil)) {
+		fmt.Fprintf(os.Stdout, ")")
+	}
+}
+
+//*************************************************************************
+
 func printTree(theNode *node) {
-	printTree(theNode.left)
-	
-	printTree(theNode.right)
+	printPostOrder(theNode)
+	fmt.Println()
 }
 
 //*************************************************************************
