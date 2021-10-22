@@ -14,24 +14,26 @@ import (
 
 //Global Variables
 var fstream *bufio.Reader
-var lexeme [100]rune //the lexeme for each token
-var nextChar rune //the current char in the file
-var lexLen int	//the current length of the lexeme
-var nextToken int	//the current token
-var charClass int	//classification of the current char
-var outputString string //the final output for the parsing	
+var lexeme [100]rune    //the lexeme for each token
+var nextChar rune       //the current char in the file
+var lexLen int          //the current length of the lexeme
+var nextToken int       //the current token
+var charClass int       //classification of the current char
+var outputString string //the final output for the parsing
+var rootNode *node
 
 //*************************************************************************
 
 //Tokens
 const (
-	EOF    = -2	//end of file
-	EOL    = -1	//end of line
-	LEFT_P = iota	//left parenthesis
-	RIGHT_P	//right parenthesis
+	LEFT_P  = iota //left parenthesis
+	RIGHT_P        //right parenthesis
 	LAMBDA
 	VARIABLE
 	DOT
+	APPLICATION
+	EOF = -2 //end of file
+	EOL = -1 //end of line
 )
 
 //*************************************************************************
@@ -200,47 +202,50 @@ func matchParenthesis(startPos int) {
 	var noOpen = strings.Count(outputString[startPos:], "(")
 	var noClose = strings.Count(outputString[startPos:], ")")
 	for noClose > noOpen {
-		outputString = outputString[:startPos] + "(" + outputString[startPos:]
+		outputString = outputString[:startPos] + "(" +
+			outputString[startPos:]
 		noOpen++
 	}
 }
 
 //*************************************************************************
 
-//Finds valid expressions
-func expr() {
-	var exprStartPos = len(outputString)
-	lexpr()
-	expr_p()
-	matchParenthesis(exprStartPos)
+func expr() *node {
+	lexprNode := lexpr()
+	exprPNodes := expr_p()
+	if len(exprPNodes) == 0 {
+		return lexprNode
+	} else {
+		return appTreeCreate(append([]*node{lexprNode}, exprPNodes...))
+	}
 }
 
 //*************************************************************************
 
 //Finds valid expr_p expressions. May be "empty"
-func expr_p() {
+func expr_p() []*node {
 	if !(nextToken == EOF || nextToken == EOL || nextToken == RIGHT_P) {
-		lexpr()
-		expr_p()
+		lexprNode := lexpr()
+		exprPNodes := expr_p()
+		exprPNodes = append([]*node{lexprNode}, exprPNodes...)
+		return exprPNodes
 	}
+	return []*node{}
 }
 
 //*************************************************************************
 
 //Finds valid lambda abstractions. If there's no lambda abstractions,
 //continue to pexpr.
-func lexpr() {
+func lexpr() *node {
 	if nextToken == LAMBDA { //check if we have a lambda abstraction
-		addLexeme()
 		lex()
-		if nextToken == VARIABLE {	//check if we have a variable
-			addLexeme() 			//after the lambda
+		if nextToken == VARIABLE { //check if we have a variable
+			lambdaNode := newNode(string(lexeme[:lexLen]), LAMBDA)
 			lex()
-			if nextToken == VARIABLE {
-				appendToOutputStr(" ")
-			}
 			if nextToken != EOL && nextToken != EOF {
-				lexpr()
+				lambdaNode.linkNodes(lexpr())
+				return lambdaNode
 			} else {
 				fmt.Fprintf(os.Stderr,
 					"MISSING EXPRESSION AFTER LAMBDA ABSTRACTION\n")
@@ -250,38 +255,39 @@ func lexpr() {
 			fmt.Fprintf(os.Stderr, "NO VARIABLE AFTER LAMBDA TOKEN\n")
 			os.Exit(1)
 		}
+		return nil
 	} else {
-		pexpr()
+		return pexpr()
 	}
 }
 
 //*************************************************************************
 
 //Looks for a valid pexpr expression.
-func pexpr() {
+func pexpr() *node {
 	if nextToken == LEFT_P {
-		addLexeme()
 		lex()
 		if nextToken == RIGHT_P {
 			fmt.Fprintf(os.Stderr,
 				"MISSING EXPRESSION AFTER OPENING PARENTHESIS\n")
 			os.Exit(1)
 		}
-		expr()
-		addLexeme()
+		exprNode := expr()
 		if nextToken != RIGHT_P {
 			fmt.Fprintf(os.Stderr, "MISSING CLOSING PARENTHESIS\n")
 			os.Exit(1)
 		} else {
 			lex()
 		}
+		return exprNode
 	} else { //var case
-		addLexeme()
+		varNode := newNode(string(lexeme[:lexLen]), VARIABLE)
 		lex()
-		if nextToken == VARIABLE || nextToken == LEFT_P ||
+		/*if nextToken == VARIABLE || nextToken == LEFT_P ||
 			nextToken == LAMBDA {
 			appendToOutputStr(")")
-		}
+		}*/
+		return varNode
 	}
 }
 
@@ -290,23 +296,29 @@ func pexpr() {
 //Parses each line in the text file, and outputs the parsed string
 //given that no errors has been encountered.
 func parse() {
-	outputString = ""
 	lex()
 	if nextToken == EOF {
 		return
 	}
-	expr()
+	rootNode = expr()
 	if nextToken != EOL && nextToken != EOF {
 		fmt.Fprintf(os.Stderr, "INPUT STRING NOT FULLY PARSED\n")
 		os.Exit(1)
 	}
-	fmt.Fprintf(os.Stdout, "OUTPUT STRING IS: %s\n", outputString)
+	fmt.Fprintf(os.Stdout, "root = %s\n\n", rootNode.left.value)
+	fmt.Fprintf(os.Stdout, "OUTPUT STRING IS: %s\n\n", treeToString(rootNode))
+
+	checkReduction(rootNode)
+	fmt.Fprintf(os.Stdout, "root = %s\n\n", rootNode.left.value)
+	fmt.Fprintf(os.Stdout, "OUTPUT STRING IS: %s\n\n", treeToString(rootNode))
+
 }
 
 //*************************************************************************
 
 //Main driver of the parsing
 func main() {
+	//fmt.Fprintf(os.Stdout, "LEFT_P = %s\n RIGHT_P = %s\n LAMBDA = %s\n VARIABLE = %s\n DOT = %s\n APPLICATION = %s\n LETTER = %s\n DIGIT = %s\n UNKNOWN = %s\n ", strconv.Itoa(LEFT_P), strconv.Itoa(RIGHT_P), strconv.Itoa(LAMBDA), strconv.Itoa(VARIABLE), strconv.Itoa(DOT), strconv.Itoa(APPLICATION), strconv.Itoa(LETTER), strconv.Itoa(DIGIT), strconv.Itoa(UNKNOWN))
 	if len(os.Args) < 2 {
 		fmt.Fprintf(os.Stderr, "No arguments given. \n")
 		os.Exit(1)
@@ -321,9 +333,8 @@ func main() {
 
 	for err == nil && nextToken != EOF {
 		parse()
-	}//parses each line until EOF
-	os.Exit(0)	//exits the program with status 0 when everything is
-}				//parsed correctly.
+	} //parses each line until EOF
+	os.Exit(0) //exits the program with status 0 when everything is
+} //parsed correctly.
 
 //*************************************************************************
-//
