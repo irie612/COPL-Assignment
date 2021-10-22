@@ -305,11 +305,15 @@ func parse() {
 		fmt.Fprintf(os.Stderr, "INPUT STRING NOT FULLY PARSED\n")
 		os.Exit(1)
 	}
-	fmt.Fprintf(os.Stdout, "root = %s\n", rootNode.left.value)
+
+	fmt.Fprintf(os.Stdout, "root = %d\n", rootNode.token)
+	fmt.Fprintf(os.Stdout, "root = %s\n", rootNode.value)
 	printTree(rootNode)
 
-	checkReduction(rootNode)
-	fmt.Fprintf(os.Stdout, "root = %s\n", rootNode.left.value)
+	checkReduction(&rootNode)
+	fmt.Fprintf(os.Stdout, "root = %d\n", rootNode.token)
+	fmt.Fprintf(os.Stdout, "root = %s\n", rootNode.value)
+	
 	printTree(rootNode)
 }
 

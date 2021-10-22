@@ -18,9 +18,9 @@ type node struct {
 	bound				bool
 }
 
-type astTree struct {
-	root *node
-}
+/*type astTree struct {
+	var rootNode *node
+} */
 
 //*************************************************************************
 
@@ -242,25 +242,25 @@ func substituteTree(theNode *node, subNode *node, targetVar rune) {
 	substituteTree(theNode.right, subNode, targetVar)
 }
 
-/*
+
 // Applies beta-reduction once to the first applicable branch with preference
 // to the left hand side.
-func betaReduce(theNode *node) bool {
-	if (theNode == nil) {
+func applyBetaReduc(theNode **node) bool {
+	if ((*theNode) == nil) {
 		return false
 	}
 
-	if (theNode.token == APPLICATION && theNode.left.token == APPLICATION) {
-		return betaReduce(theNode.left)
+	if ((*theNode).token == APPLICATION && (*theNode).left.token == APPLICATION) {
+		return applyBetaReduc(&((*theNode).left))
 	}
 
-	if (theNode.token == APPLICATION && theNode.left.token == LAMBDA && theNode.right != nil) {
+	if ((*theNode).token == APPLICATION && (*theNode).left.token == LAMBDA && (*theNode).right != nil) {
 		varIsCopy:=true
 		for (varIsCopy) {
 			boundVars := []rune{}
 			freeVars := []rune{}
-			giveBoundVars(theNode.left, &boundVars)
-			giveFreeVars(theNode.right, &freeVars)
+			giveBoundVars((*theNode).left, &boundVars)
+			giveFreeVars((*theNode).right, &freeVars)
 			varIsCopy, duplicateVar := isCopy(boundVars, freeVars)
 			
 			if (!varIsCopy) {
@@ -269,64 +269,68 @@ func betaReduce(theNode *node) bool {
 			
 			usedVars := append(boundVars, freeVars...)
 			freshVar := giveFresh(usedVars, duplicateVar)
-			alphaConversion(theNode.left, duplicateVar, freshVar)
+			alphaConversion((*theNode).left, duplicateVar, freshVar)
 
-			giveBoundVars(theNode.left, &boundVars)
-			giveFreeVars(theNode.right, &freeVars)
+			giveBoundVars((*theNode).left, &boundVars)
+			giveFreeVars((*theNode).right, &freeVars)
 			varIsCopy, _ = isCopy(boundVars, freeVars)
 		}
 		
-		targetSplice := []rune(theNode.left.value)
+		targetSplice := []rune((*theNode).left.value)
 		targetVar := targetSplice[0]
-		fmt.Fprintf(os.Stdout, "targetVar %c", targetVar)
-		substituteTree(theNode.left.left, theNode.right, targetVar)	
+		substituteTree((*theNode).left.left, (*theNode).right, targetVar)	
 
 		// UP TO THIS POINT EVERYTHING WORKS
 		// However, we still need to delete the right branch, and move the left-branch up.
 		// The code below was one of my attempts, it doesn't work
 
-		if (theNode.parent != nil) {
-			childNode := theNode.left
-			parentNode := theNode.parent
+		if ((*theNode).parent != nil) {
+			childNode := (*theNode).left
+			parentNode := (*theNode).parent
 			parentNode.left = childNode
 			childNode.parent = parentNode
-			theNode = nil 
-			theNode = childNode
+			(*theNode) = nil 
+			(*theNode) = childNode
+		} else {
+			childNode := (*theNode).left.left
+			childNode.parent = nil
+			(*theNode) = childNode
 		}
-		
-		return true
 	}
-	return false
-} */
 
+	return false
+} 
+
+
+
+/*func betaReduc(theNode *node) {
+	if (applyBetaReduc(theNode)) {
+		
+	}
+}*/
 
 // this function doesnt really have a functionality yet.
 // I am merely using it to test functions with.
-func checkReduction (theNode *node) bool {
+func checkReduction (theNode **node) bool {
 	boundVars := []rune{}
-	giveBoundVars(theNode, &boundVars)
+	giveBoundVars((*theNode), &boundVars)
 	for i := range boundVars {
 		theByte := boundVars[i]
 		fmt.Fprintf(os.Stdout,  "bound %c \n", theByte)
 	}
 
 	freeVars := []rune{}
-	giveFreeVars(theNode, &freeVars)
+	giveFreeVars((*theNode), &freeVars)
 	for i := range freeVars {
 		theByte := freeVars[i]
 		fmt.Fprintf(os.Stdout,  "free %c \n", theByte)
 	}
 
-//	if (betaReduce(theNode)) {
-	//	fmt.Fprintf(os.Stdout, "heyyy")
-	//}
+	if applyBetaReduc(&(*theNode)) {
+		fmt.Fprintf(os.Stdout, "apply work")
+	}
 	
-	temp := theNode.left
-	temp.token = VARIABLE
-	temp.value = "hah"
-	theNode = nil
-	theNode = temp
-	fmt.Fprint(os.Stdout, "theRoot %s", theNode.value )
+	
 	return true
 } 
 
@@ -368,5 +372,3 @@ func printTree(theNode *node) {
 	printPostOrder(theNode)
 	fmt.Println()
 }
-
-//*************************************************************************
