@@ -208,6 +208,11 @@ func alphaConversion(theNode *node, duplicateVar rune, freshChar rune) {
 
 //*************************************************************************
 
+
+// substitutes the variables bound to the original lambda expression.
+// however, im unsure whether newNode is actually a new independent node
+// from subNode (subnode= the "values" for substitution), or if it a some sort of pointer
+// to the subNode. As in, every substituted node are all merely pointing to the single subNode.
 func substituteTree(theNode *node, subNode *node, targetVar rune) {
 	if (theNode == nil) {
 		return
@@ -218,7 +223,7 @@ func substituteTree(theNode *node, subNode *node, targetVar rune) {
 		return
 	}
 
-	if (theNode.token == VARIABLE && nodeVar[0] == targetVar) {
+	if (theNode.token == VARIABLE && nodeVar[0] == targetVar) {	
 		var newNode *node
 		newNode = subNode
 		parentNode := theNode.parent
@@ -274,7 +279,12 @@ func betaReduce(theNode *node) bool {
 		targetSplice := []rune(theNode.left.value)
 		targetVar := targetSplice[0]
 		fmt.Fprintf(os.Stdout, "targetVar %c", targetVar)
-		substituteTree(theNode.left.left, theNode.right, targetVar)
+		substituteTree(theNode.left.left, theNode.right, targetVar)	
+
+		// UP TO THIS POINT EVERYTHING WORKS
+		// However, we still need to delete the right branch, and move the left-branch up.
+		// The code below was one of my attempts, it doesn't work
+
 		if (theNode.parent != nil) {
 			childNode := theNode.left
 			parentNode := theNode.parent
@@ -283,10 +293,15 @@ func betaReduce(theNode *node) bool {
 			theNode = nil 
 			theNode = childNode
 		}
+		
+		return true
 	}
 	return false
 } */
 
+
+// this function doesnt really have a functionality yet.
+// I am merely using it to test functions with.
 func checkReduction (theNode *node) bool {
 	boundVars := []rune{}
 	giveBoundVars(theNode, &boundVars)
