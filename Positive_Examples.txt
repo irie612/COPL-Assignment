@@ -1,11 +1,1 @@
-(a b)
-abc
-a b c
-a (b c)
-(\ x a b)
-(\x((a) (b)))
-(x \y y z)
-a b c (d e f g)
-a b \x y
-a b c d \x e f g
-a b c d (\x e f g)
+\a b

@@ -18,6 +18,10 @@ type node struct {
 	bound				bool
 }
 
+type astTree struct {
+	root *node
+}
+
 //*************************************************************************
 
 func newNode(value string, token int) *node {
@@ -259,18 +263,26 @@ func betaReduce(theNode *node) bool {
 			}
 			
 			usedVars := append(boundVars, freeVars...)
-			giveFresh(usedVars, duplicateVar)
-			alphaConversion(theNode.left, duplicateVar, freshChar)
+			freshVar := giveFresh(usedVars, duplicateVar)
+			alphaConversion(theNode.left, duplicateVar, freshVar)
 
 			giveBoundVars(theNode.left, &boundVars)
 			giveFreeVars(theNode.right, &freeVars)
-			varIsCopy, _ := isCopy(boundVars, freeVars)
+			varIsCopy, _ = isCopy(boundVars, freeVars)
 		}
 		
-		
-		substitute
-		morphTree
-		return true
+		targetSplice := []rune(theNode.left.value)
+		targetVar := targetSplice[0]
+		fmt.Fprintf(os.Stdout, "targetVar %c", targetVar)
+		substituteTree(theNode.left.left, theNode.right, targetVar)
+		if (theNode.parent != nil) {
+			childNode := theNode.left
+			parentNode := theNode.parent
+			parentNode.left = childNode
+			childNode.parent = parentNode
+			theNode = nil 
+			theNode = childNode
+		}
 	}
 	return false
 } */
@@ -290,20 +302,16 @@ func checkReduction (theNode *node) bool {
 		fmt.Fprintf(os.Stdout,  "free %c \n\n", theByte)
 	}
 
-	varIsCopy, theByte := isCopy(boundVars, freeVars)
-	if (varIsCopy) {
-		fmt.Fprintf(os.Stdout, "copyByte %c \n", theByte)
-		usedVars := append(boundVars, freeVars...)
-		fresh := giveFresh(usedVars, theByte)
-		fmt.Fprintf(os.Stdout, "freshRune %c \n", fresh)
-		alphaConversion(theNode.left, theByte, fresh)
-		
-	}
-	targetSplice := []rune(theNode.left.value)
-	targetVar := targetSplice[0]
-	fmt.Fprintf(os.Stdout, "targetVar %c", targetVar)
-	substituteTree(theNode.left.left, theNode.right, targetVar)
-
+//	if (betaReduce(theNode)) {
+	//	fmt.Fprintf(os.Stdout, "heyyy")
+	//}
+	
+	temp := theNode.left
+	temp.token = VARIABLE
+	temp.value = "hah"
+	theNode = nil
+	theNode = temp
+	fmt.Fprint(os.Stdout, "theRoot %s", theNode.value )
 	return true
 } 
 
@@ -315,34 +323,10 @@ func testAha (theNode *node) {
 
 //*************************************************************************
 
-func treeToString(n *node) string {
-	if n.token == APPLICATION {
-		if n.left.token == APPLICATION && n.right.token == APPLICATION {
-			return "(" + treeToString(n.left) + ")" + "(" + treeToString(n.right) + ")"
-		} else if n.right.token == VARIABLE && n.left.token != LAMBDA {
-			if n.parent != nil && n.parent.token != APPLICATION {
-				return "((" + treeToString(n.left) + ")" + treeToString(n.right) + ")"
-			} else {
-				return "(" + treeToString(n.left) + ")" + treeToString(n.right)
-			}
-		} else if n.right.token == APPLICATION {
-			return treeToString(n.left) + "(" + treeToString(n.right) + ")"
-		} else if n.right.token == LAMBDA {
-			return "(" + treeToString(n.left) + ")" + treeToString(n.right)
-		} else {
-			return treeToString(n.left) + treeToString(n.right)
-		}
-	} else if n.token == LAMBDA {
-		if n.left.token == APPLICATION {
-			return "λ" + n.value + treeToString(n.left)
-		} else {
-			return "(" + "λ" + n.value + " " + treeToString(n.left) + ")"
-		}
-	} else if n.token == VARIABLE {
-		return n.value
-	} else {
-		return "SOMETHING HAS GONE WRONG"
-	}
+func printTree(theNode *node) {
+	printTree(theNode.left)
+	
+	printTree(theNode.right)
 }
 
 //*************************************************************************
