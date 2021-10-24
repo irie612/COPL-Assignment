@@ -306,6 +306,7 @@ func applyBetaReduc(theNode **node) bool {
 // this function doesnt really have a functionality yet.
 // I am merely using it to test functions with.
 func checkReduction (theNode **node) bool {
+
 	boundVars := []rune{}
 	giveBoundVars((*theNode), &boundVars)
 	for i := range boundVars {
@@ -342,9 +343,6 @@ func printPostOrder(theNode *node) {
 	}
 	if (theNode.token == LAMBDA) {
 		fmt.Fprintf(os.Stdout, "(")
-	}
-
-	if (theNode.token == LAMBDA) {
 		fmt.Fprintf(os.Stdout, "λ%s ", theNode.value)
 	} else if (theNode.token == VARIABLE) {
 		fmt.Fprintf(os.Stdout, "%s", theNode.value)
@@ -355,7 +353,8 @@ func printPostOrder(theNode *node) {
 	}
 	printPostOrder(theNode.left)
 
-	if (theNode.left != nil && theNode.right != nil) {
+	if (theNode.left != nil && theNode.right != nil) &&
+		(theNode.left.token == VARIABLE && theNode.right.token == VARIABLE) {
 		fmt.Fprintf(os.Stdout, " ")
 	}
 	printPostOrder(theNode.right)
