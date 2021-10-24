@@ -245,6 +245,7 @@ func substituteTree(theNode *node, subNode *node, targetVar rune) {
 
 // Applies beta-reduction once to the first applicable branch with preference
 // to the left hand side.
+// might be working with single pointer
 func applyBetaReduc(theNode **node) bool {
 	if ((*theNode) == nil || (*theNode).token == VARIABLE) {
 		return false
@@ -353,6 +354,10 @@ func printPostOrder(theNode *node) {
 		fmt.Fprintf(os.Stdout, "(")
 	}
 	printPostOrder(theNode.left)
+
+	if (theNode.left != nil && theNode.right != nil) {
+		fmt.Fprintf(os.Stdout, " ")
+	}
 	printPostOrder(theNode.right)
 	if (theNode.token == LAMBDA || (theNode.left != nil && theNode.right != nil)) {
 		fmt.Fprintf(os.Stdout, ")")
