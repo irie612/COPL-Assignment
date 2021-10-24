@@ -1,9 +1,9 @@
 package main
 
 import (
-	"strconv"
 	"fmt"
 	"os"
+	"strconv"
 )
 
 //AST Node Struct
@@ -246,16 +246,13 @@ func substituteTree(theNode *node, subNode *node, targetVar rune) {
 // Applies beta-reduction once to the first applicable branch with preference
 // to the left hand side.
 func applyBetaReduc(theNode **node) bool {
-	if ((*theNode) == nil) {
+	if ((*theNode) == nil || (*theNode).token == VARIABLE) {
 		return false
 	}
-
-	if ((*theNode).token == APPLICATION && (*theNode).left.token == APPLICATION) {
-		return applyBetaReduc(&((*theNode).left))
-	}
-
+	//Reduction possible
 	if ((*theNode).token == APPLICATION && (*theNode).left.token == LAMBDA && (*theNode).right != nil) {
 		varIsCopy:=true
+		//check the need for alpha conversion
 		for (varIsCopy) {
 			boundVars := []rune{}
 			freeVars := []rune{}
@@ -275,26 +272,22 @@ func applyBetaReduc(theNode **node) bool {
 			giveFreeVars((*theNode).right, &freeVars)
 			varIsCopy, _ = isCopy(boundVars, freeVars)
 		}
-		
+		//actual substitution
 		targetSplice := []rune((*theNode).left.value)
 		targetVar := targetSplice[0]
 		substituteTree((*theNode).left.left, (*theNode).right, targetVar)	
 
-		// UP TO THIS POINT EVERYTHING WORKS
-		// However, we still need to delete the right branch, and move the left-branch up.
-		// The code below was one of my attempts, it doesn't work
+		//link the sub tree of the lambda node to the its parent
+		(*theNode).left.left.parent = (*theNode).parent
+		//change the value stored at the address of the lambda node
+		**theNode = *((*theNode).left.left)
 
-		if ((*theNode).parent != nil) {
-			childNode := (*theNode).left
-			parentNode := (*theNode).parent
-			parentNode.left = childNode
-			childNode.parent = parentNode
-			(*theNode) = nil 
-			(*theNode) = childNode
-		} else {
-			childNode := (*theNode).left.left
-			childNode.parent = nil
-			(*theNode) = childNode
+		//Reduction is not possible. Check left branch. If no reduction found there, check right side
+	}else{
+		if applyBetaReduc( (&(*theNode).left) ) == false {
+			return applyBetaReduc((&(*theNode).right))
+		}else{
+			return true
 		}
 	}
 
