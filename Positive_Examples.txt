@@ -1,2 +1,4 @@
-(\x x)b
-(\x x)(\y d)
+b((\x a)b)
+(\x(\x x))x
+(\z z)b
+c d
