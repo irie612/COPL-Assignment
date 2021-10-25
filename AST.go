@@ -327,7 +327,6 @@ func applyBetaReduc(theNode **node) bool {
 	}
 	//Reduction possible
 	if ((*theNode).token == APPLICATION && (*theNode).left.token == LAMBDA && (*theNode).right != nil) {
-		varIsCopy:=true
 		//check the need for alpha conversion
 
 		freeVars := []string{}
