@@ -360,23 +360,15 @@ func applyBetaReduc(theNode **node) bool {
 // this function doesnt really have a functionality yet.
 // I am merely using it to test functions with.
 func checkReduction (theNode **node) bool {
-	/*
-	boundVars := []rune{}
-	giveBoundVars((*theNode), &boundVars)
-	for i := range boundVars {
-		theByte := boundVars[i]
-		fmt.Fprintf(os.Stdout,  "bound %c \n", theByte)
-	}
-
-	freeVars := []rune{}
-	giveFreeVars((*theNode), &freeVars)
-	for i := range freeVars {
-		theByte := freeVars[i]
-		fmt.Fprintf(os.Stdout,  "free %c \n", theByte)
-	}
-	*/
-	if applyBetaReduc(&(*theNode)) {
-		fmt.Fprintf(os.Stdout, "apply work\n")
+	counter := 0
+	maxReduction := 100
+	for applyBetaReduc(&(*theNode)) {
+		counter++
+		if counter >= maxReduction{
+			print("reached maximum number of reduction\n")
+			return true
+		}
+		//fmt.Fprintf(os.Stdout, "apply work\n")
 	}
 	return true
 } 
