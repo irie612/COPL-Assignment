@@ -309,7 +309,7 @@ func parse() {
 	printTree(rootNode)
 	fmt.Fprintf(os.Stdout, "rootNode.token = %d\n", rootNode.token)
 	fmt.Fprintf(os.Stdout, "rootNode.value = %s\n", rootNode.value)
-	checkReduction(&rootNode)
+	betaDriver(rootNode)
 
 	print("AFTER REDUCTION\n")
 	printTree(rootNode)

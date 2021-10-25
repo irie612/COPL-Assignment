@@ -70,29 +70,6 @@ func appTreeCreate(nodes []*node) *node {
 
 //*************************************************************************
 
-// Checks if a lambda abstraction has a bound variable to it.
-// if not, then we can apply alpha conversion just in case.
-/*func noBoundVars(theNode *node, theChar rune) bool {
-	if (theNode == nil) {
-		return false
-	} else if (theNode.token == LAMBDA && theNode.value == theChar) {
-		return false
-	} 
-
-	if (theNode.token == VARIABLE && theNode.value == theChar) {
-		return true
-	}
-
-	if (noBoundVars(theNode.left, theChar) || noBoundVars(theNode.right, theChar)) {
-		return true
-	}
-
-	return false
-}*/
-
-//*************************************************************************
-
-
 // Check if variable is already in theSlice
 // return true if it is already in theSlice
 // return false if it's new
@@ -107,28 +84,16 @@ func isPresent (variable string, theSlice []string ) (bool/*, string*/) {
 
 //*************************************************************************
 
-// Gives the bound variables in a branch
-// You can use it for example giveBoundVars(root->left, &boundVars)
-// to get the bound variables of the left branch, and compare it with the free variables
-// of the right branch.
-func giveBoundVars(theNode *node, boundVars *[]string) {
-	if (theNode == nil) {
-		return
+//simpler interface. receive node with the lambda expression -> gives back the captured node
+func getCapturedNodes(theNode *node) []*node{
+	if theNode.token != LAMBDA{
+		print ("Inside getCapturedNodes(). Node should be a lambda\n")
+		os.Exit(1)
 	}
-	
-	if (theNode.token == LAMBDA) {
-		theVar := theNode.value
-		varIsCopy := isPresent(theVar,(*boundVars) )
-		if (!varIsCopy) {
-			(*boundVars) = append((*boundVars), theVar)
-		}
-	}	
-
-	giveBoundVars(theNode.left, boundVars)
-	giveBoundVars(theNode.right, boundVars)
+	capturedNodes := []*node{}
+	_giveCapturedNodes( theNode.value,theNode.left,&capturedNodes)
+	return capturedNodes
 }
-
-//*************************************************************************
 
 
 //given a variable name it searches for variable nodes with that same name starting from theNode downward
@@ -145,17 +110,37 @@ func _giveCapturedNodes(variableName string,theNode *node, boundNodes *[]*node) 
 	_giveCapturedNodes(variableName,theNode.right,boundNodes)
 }
 
-//simpler interface. receive node with the lambda expression -> gives back the captured node
-func getCapturedNodes(theNode *node) []*node{
-	if theNode.token != LAMBDA{
-		print ("Inside getCapturedNodes(). Node should be a lambda\n")
-		os.Exit(1)
-	}
-	capturedNodes := []*node{}
-	_giveCapturedNodes( theNode.value,theNode.left,&capturedNodes)
-	return capturedNodes
-}
 //*************************************************************************
+
+func getFreeVars(theNode *node) []string{
+	freeVars := []string{}
+	giveFreeVars(theNode,&freeVars)
+	return freeVars
+}
+
+// Gives the free variables in a branch in the slice <boundVars>
+// Again, can be used by calling giveFreeVars(root->right, &freeVars)
+// to get the free variables of the right branch, and to further compare it with
+// the variables of the left branch (for example).
+// Not the most efficient.
+func giveFreeVars(theNode *node, freeVars *[]string) {
+	if theNode == nil {
+		return
+	}
+
+	if theNode.token == VARIABLE {
+		theVar := theNode.value
+		varIsCopy := isPresent( theVar,*freeVars)
+		if !isBound(theNode, theVar) && !varIsCopy {
+			*freeVars = append(*freeVars, theVar)
+		}
+		return
+	}
+
+	giveFreeVars(theNode.left, freeVars)
+	giveFreeVars(theNode.right, freeVars)
+}
+
 
 // Checks whether a variable (a leaf) is bound to a lambda abstraction
 // returns true if it is bound
@@ -177,75 +162,27 @@ func isBound(theNode *node, theVar string) bool {
 
 //*************************************************************************
 
-// Gives the free variables in a branch in the slice <boundVars>
-// Again, can be used by calling giveFreeVars(root->right, &freeVars)
-// to get the free variables of the right branch, and to further compare it with
-// the variables of the left branch (for example).
-// Not the most efficient.
-func giveFreeVars(theNode *node, freeVars *[]string) {
-	if (theNode == nil) {
-		return
-	}
-
-	if (theNode.token == VARIABLE) {
-		theVar := theNode.value
-		varIsCopy := isPresent( theVar,(*freeVars))
-		if (!isBound(theNode, theVar) && !varIsCopy) {
-			(*freeVars) = append((*freeVars), theVar)
-		}
-		return
-	}
-
-	giveFreeVars(theNode.left, freeVars)
-	giveFreeVars(theNode.right, freeVars)
-}
-
-//*************************************************************************
-
 //driver for the alpha conversion(s)
 
-func alphaDriver(/*theNode *node,*/ capturedNodes []*node,freeVars []string){
+func alphaDriver(capturedNodes []*node,freeVars []string){
 	for _,theNode:= range capturedNodes{
-		og_value := theNode.value //value of the variable from which we go up the tree
-		tmp_node := theNode
+		ogValue := theNode.value //value of the variable from which we go up the tree
+		tmpNode := theNode
 		//for each captured node we go up the tree. we stop when we either found nil
 		//or the lambda expression that captured the node
-		for tmp_node != nil && !(tmp_node.token == LAMBDA && tmp_node.value ==og_value){
-			if tmp_node.token == LAMBDA && isPresent(tmp_node.value,freeVars){
-				//tmp_node is lambda and the value is different than og and contained in freeVars
-				alphaConversion(tmp_node,rune('a'),getFreshVariable(freeVars),false)
+		for tmpNode != nil && !(tmpNode.token == LAMBDA && tmpNode.value ==ogValue){
+			if tmpNode.token == LAMBDA && isPresent(tmpNode.value,freeVars){
+				//tmp_node is a lambda node and the value is different from og and contained in freeVars
+				alphaConversion(tmpNode,getFreshVariable(freeVars))
 			}
-			tmp_node = tmp_node.parent
+			tmpNode = tmpNode.parent
 		}
 	}
 }
 
 //get variables bounded to node, change the value of them. then changes its own value
-func alphaConversion(theNode *node, oldVar rune, freshVar string, flag bool) {
-/*
-	if (theNode == nil) {
-		return
-	}
-	local_flag := flag
-	nodeVar := []rune(theNode.value)
- //maybe can reuse get captured variables
-	if nodeVar[0] == oldVar{
-		switch theNode.token {
-		case LAMBDA:
-			if flag{
-				return
-			}
-			//else
-			local_flag = true
-			fallthrough
-		case VARIABLE:
-			theNode.value = string(freshVar)
-		}
-	}
+func alphaConversion(theNode *node, freshVar string) {
 
-	alphaConversion(theNode.left, oldVar, freshVar,local_flag)
-	alphaConversion(theNode.right, oldVar, freshVar,local_flag)
- */
 	for _,capturedNode:= range getCapturedNodes(theNode){
 		capturedNode.value = freshVar
 	}
@@ -253,27 +190,83 @@ func alphaConversion(theNode *node, oldVar rune, freshVar string, flag bool) {
 }
 
 func getFreshVariable(freeVars []string) string{
-	max_size := 100
-	char_array := []rune{}
+	maxSize := 100
+	charArray := []rune{}
 
 	i:=0
-	for i < max_size{
-		char_array = append(char_array,rune(int('a')-1) )
+	for i < maxSize{ //add a character to the string
+		charArray = append(charArray,rune(int('a')-1) )
 		j:=0
-		for j < 26{
-			char_array[i]++
-			if !isPresent(string(char_array),freeVars){
-				return string(char_array)
+		for j < 26{ //increment the last character in the string (ex: a->b b->c ...)
+			charArray[i]++
+			if !isPresent(string(charArray),freeVars){
+				return string(charArray)
 			}
+			j++
 		}
+		i++
 	}
 	return "#"
 }
+
 //*************************************************************************
+
+//main function for the beta-reductions
+func betaDriver (theNode *node) bool {
+	counter := 0
+	maxReduction := 100
+	for betaReduction(theNode) {
+		counter++
+		if counter >= maxReduction{
+			print("reached maximum number of reduction\n")
+			return true
+		}
+		//fmt.Fprintf(os.Stdout, "apply work\n")
+	}
+	return true
+}
+
+// Applies beta-reduction once to the first applicable branch with preference
+// to the left-hand side.
+// might be working with single pointer
+func betaReduction(theNode *node) bool {
+	if theNode == nil || theNode.token == VARIABLE {
+		return false
+	}
+	//Reduction possible
+	if theNode.token == APPLICATION && theNode.left.token == LAMBDA && theNode.right != nil {
+		//check the need for alpha conversion
+		//free variables on the right-hand side of the application
+		freeVars := getFreeVars(theNode.right)
+		//node captured by the lambda on the left-hand side of the application
+		capturedNodes := getCapturedNodes( theNode.left )
+
+		alphaDriver(capturedNodes,freeVars)
+
+		//actual substitution
+		targetVar := (theNode.left.value)
+		substituteTree(theNode.left.left, theNode.right, targetVar)
+
+		//link the sub tree of the lambda node to the its parent
+		theNode.left.left.parent = theNode.parent
+		//change the value stored at the address of the lambda node
+		*theNode = *(theNode.left.left)
+
+		return true
+	}else{
+		//Reduction is not possible. Check left branch. If no reduction found there, check right side
+		if betaReduction( theNode.left ) == false {
+			return betaReduction(theNode.right)
+		} else{
+			return true
+		}
+	}
+
+	return false
+}
 
 // substitutes the variables bound to the original lambda expression.
 // newNode is new independent node
-// not sure if it would work with only one right-hand side tree that's being pointed by the parents of every bound variable
 func substituteTree(theNode *node, subNode *node, targetVar string) {
 	if (theNode == nil) {
 		return
@@ -317,66 +310,12 @@ func getCopySubtree(subtree *node) *node{
 	return returnNode
 }
 
+//*************************************************************************
 
-// Applies beta-reduction once to the first applicable branch with preference
-// to the left-hand side.
-// might be working with single pointer
-func applyBetaReduc(theNode **node) bool {
-	if ((*theNode) == nil || (*theNode).token == VARIABLE) {
-		return false
-	}
-	//Reduction possible
-	if ((*theNode).token == APPLICATION && (*theNode).left.token == LAMBDA && (*theNode).right != nil) {
-		//check the need for alpha conversion
-
-		freeVars := []string{}
-		capturedNodes := getCapturedNodes( (*theNode).left )
-		giveFreeVars((*theNode).right, &freeVars)
-		alphaDriver(capturedNodes,freeVars)
-
-		//actual substitution
-		targetVar := ((*theNode).left.value)
-		//targetVar := targetSplice[0]
-		substituteTree((*theNode).left.left, (*theNode).right, targetVar)	
-
-		//link the sub tree of the lambda node to the its parent
-		(*theNode).left.left.parent = (*theNode).parent
-		//change the value stored at the address of the lambda node
-		**theNode = *((*theNode).left.left)
-
-		return true
-	}else{
-		//Reduction is not possible. Check left branch. If no reduction found there, check right side
-		if applyBetaReduc( (&(*theNode).left) ) == false {
-			return applyBetaReduc((&(*theNode).right))
-		} else{
-			return true
-		}
-	}
-
-	return false
+func printTree(theNode *node) {
+	printPostOrder(theNode)
+	fmt.Println()
 }
-
-// this function doesnt really have a functionality yet.
-// I am merely using it to test functions with.
-func checkReduction (theNode **node) bool {
-	counter := 0
-	maxReduction := 100
-	for applyBetaReduc(&(*theNode)) {
-		counter++
-		if counter >= maxReduction{
-			print("reached maximum number of reduction\n")
-			return true
-		}
-		//fmt.Fprintf(os.Stdout, "apply work\n")
-	}
-	return true
-} 
-
-//*************************************************************************
-
-
-//*************************************************************************
 
 func printPostOrder(theNode *node) {
 	if (theNode == nil) {
@@ -406,7 +345,3 @@ func printPostOrder(theNode *node) {
 
 //*************************************************************************
 
-func printTree(theNode *node) {
-	printPostOrder(theNode)
-	fmt.Println()
-}
