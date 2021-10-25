@@ -3,3 +3,4 @@ b((\x a)b)
 (\z z)b
 c d
 a(c((\x x)b))
+((λx (λb x))b)
