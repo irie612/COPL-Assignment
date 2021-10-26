@@ -4,12 +4,12 @@
 // Course: Concepts of Programming Language
 // Assignment 2: Interpreter
 // Class 2, Group 11
-// Author(s) :	Emanuele Greco (s3375951), 
+// Author(s) :	Emanuele Greco (s3375951),
 //							Irie Railton (s3292037),
 //							Kah ming Wong (s2641976).
 //
 // Date: 26th October, 2021
-// 
+//
 
 //*************************************************************************
 
@@ -320,12 +320,12 @@ func parse() {
 		fmt.Fprintf(os.Stderr, "INPUT STRING NOT FULLY PARSED\n")
 		os.Exit(1)
 	}
-	print("BEFORE REDUCTION:\n")
+	fmt.Fprintf(os.Stdout, "BEFORE REDUCTION:\n")
 	printTree(rootNode)
 
 	betaDriver(rootNode)
 
-	print("AFTER REDUCTION:\n")
+	fmt.Fprintf(os.Stdout, "AFTER REDUCTION:\n")
 	printTree(rootNode)
 	println()
 
