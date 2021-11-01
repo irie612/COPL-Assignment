@@ -4,3 +4,6 @@ b((\x a)b)
 c d
 a(c((\x x)b))
 ((λx (λb x))b)
+(\x(x((\y y)x)))(\z(z b))
+(\x x x)(\x x x)
+((((λf(λg(λx((fx)(g x)))))(λm(λn(n m))))(λn z))p)

@@ -219,7 +219,7 @@ func betaDriver (theNode *node) bool {
 		counter++
 		if counter >= maxReduction{
 			print("reached maximum number of reduction\n")
-			return true
+			os.Exit(2)
 		}
 		//fmt.Fprintf(os.Stdout, "apply work\n")
 	}
