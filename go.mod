@@ -1,3 +1,3 @@
-module cpl1
+module cpl
 
 go 1.13
