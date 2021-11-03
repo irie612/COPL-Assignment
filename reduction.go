@@ -25,7 +25,7 @@ import (
 // Checks if variable is already in theSlice.
 // Return true if it is already in theSlice.
 // Return false if it's new.
-func isPresent (variable string, theSlice []string) bool {
+func isPresent(variable string, theSlice []string) bool {
 	for i:= range theSlice {
 		if (theSlice[i] == variable) {
 			return true
