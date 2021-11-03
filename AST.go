@@ -169,9 +169,9 @@ func _giveFreeVars(theNode *node, freeVars *[]string) {
 // Result:	-True if the leaf is a free variable.
 //					-False if the leaf is a bound variable.
 func isBound(theNode *node, theVar string) bool {
-	if (theNode == nil) {
+	if theNode == nil {
 		return false
-	} else if (theNode.token == LAMBDA && theNode.value == theVar) {
+	} else if theNode.token == LAMBDA && theNode.value == theVar {
 		return true
 	}
 
