@@ -272,12 +272,8 @@ func parse() {
 		fmt.Fprintf(os.Stderr, "INPUT STRING NOT FULLY PARSED\n")
 		os.Exit(1)
 	}
-	print("BEFORE REDUCTION:\n")
-	printTree(rootNode)
 
 	betaDriver(rootNode)
-
-	print("AFTER REDUCTION\n")
 	printTree(rootNode)
 }
 
