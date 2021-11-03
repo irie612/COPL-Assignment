@@ -47,15 +47,3 @@ Assignment 2 builds onto our previous iteration of lexer and parser. That is, wi
 2. Is alpha-conversion required? If so, apply alpha-conversion and then beta-reduction, if not, immediately apply beta-reduction. Return true.
 3. Move down the tree, starting with the left child. And check whether the current node is a valid node for beta-reduction (step 1). We keep moving down the tree through the left nodes until we hit a NULL (or there was a valid beta-reduction). If we hit a NULL `betaReudction()` will return a false (to the previous recursive calls). And move to step 4. If the call of `betaReduction()` with the left child resulted into a true, then return true. Otherwise, also move to step 4.
 4. If the branch under the left child of the "current node" has no valid beta-reduction, then go down the tree through the right child of "current node". And go back to step 1. At this point, the "current node" will return the value of the `betaReduction()` call of the right child.
-
-A)
-
-It checks if a reduction is possible on the root of the tree through the use 
-of the betaReduction() function.
-If not, we recursively call the function first on the left child node and then, 
-if no reduction has been found there, on the right node.
-If no reduction has been found, we exit
-
-B)
-It checks for reductions starting from the top of the tree.
-if two reductions are possible on the same level of the tree, the left one is preferred
