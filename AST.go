@@ -114,9 +114,9 @@ func _giveCapturedNodes(variableName string, theNode *node,
 												boundNodes *[]*node) {
 	if theNode == nil {
 		return
-	}else if (theNode.token == LAMBDA && theNode.value == variableName){
+	} else if (theNode.token == LAMBDA && theNode.value == variableName) {
 		return
-	}else if (theNode.token == VARIABLE && theNode.value == variableName){
+	} else if (theNode.token == VARIABLE && theNode.value == variableName) {
 		*boundNodes = append(*boundNodes, theNode)
 	}
 
@@ -130,7 +130,7 @@ func _giveCapturedNodes(variableName string, theNode *node,
 // the "root" of that branch.
 // Expectations: The tree is valid and complete.
 // Return-value: The slice with all the free variables in the branch.
-func getFreeVars(theNode *node) []string{
+func getFreeVars(theNode *node) []string {
 	freeVars := []string{}
 	_giveFreeVars(theNode,&freeVars)
 	return freeVars
@@ -182,14 +182,14 @@ func isBound(theNode *node, theVar string) bool {
 
 // Function for the alpha-conversion(s).
 func alphaDriver(capturedNodes []*node, freeVars []string) {
-	for _,theNode:= range capturedNodes{
-		ogValue := theNode.value //value of the variable from which we go up the tree
-		tmpNode := theNode
-		//for each captured node we go up the tree. we stop when we either found nil
-		//or the lambda expression that captured the node
+	for _,theNode:= range capturedNodes {
+		ogValue := theNode.value 	//Value of the variable from which...
+		tmpNode := theNode				//we go up the tree.
+		//for each captured node we go up the tree. we stop when 
+		//we either found nil or the lambda expression that captured the node.
 		for tmpNode != nil && !(tmpNode.token == LAMBDA && 
-		tmpNode.value ==ogValue) {
-			if tmpNode.token == LAMBDA && isPresent(tmpNode.value,freeVars){
+		tmpNode.value == ogValue) {
+			if tmpNode.token == LAMBDA && isPresent(tmpNode.value, freeVars) {
 				// tmp_node is a lambda node and the value is different from 
 				// og and contained in freeVars
 				alphaConversion(tmpNode,getFreshVariable(freeVars))
@@ -204,8 +204,7 @@ func alphaDriver(capturedNodes []*node, freeVars []string) {
 // Get variables bounded to node, change the value of them,
 // then changes its own value.
 func alphaConversion(theNode *node, freshVar string) {
-
-	for _,capturedNode:= range getCapturedNodes(theNode){
+	for _,capturedNode:= range getCapturedNodes(theNode) {
 		capturedNode.value = freshVar
 	}
 	theNode.value = freshVar
@@ -257,7 +256,8 @@ func betaReduction(theNode *node) bool {
 		return false
 	}
 	//Reduction possible
-	if theNode.token == APPLICATION && theNode.left.token == LAMBDA && theNode.right != nil {
+	if theNode.token == APPLICATION && theNode.left.token == LAMBDA && 
+	theNode.right != nil {
 		//check the need for alpha conversion
 		//free variables on the right-hand side of the application
 		freeVars := getFreeVars(theNode.right)
@@ -276,7 +276,7 @@ func betaReduction(theNode *node) bool {
 		*theNode = *(theNode.left.left)
 
 		return true
-	}else{
+	} else {
 		//Reduction is not possible. Check left branch. If no reduction found there, check right side
 		if betaReduction(theNode.left) == false {
 			return betaReduction(theNode.right)
@@ -295,22 +295,22 @@ func betaReduction(theNode *node) bool {
 // <subNode>= what the substitution must result into.
 // targetVar= the variable of the original lambda expression.
 func substituteTree(theNode *node, subNode *node, targetVar string) {
-	if (theNode == nil) {
+	if theNode == nil {
 		return
 	}
 
-	if (theNode.token == LAMBDA && theNode.value == targetVar) {
+	if theNode.token == LAMBDA && theNode.value == targetVar {
 		return
 	}
 
-	if (theNode.token == VARIABLE && theNode.value == targetVar) {
+	if theNode.token == VARIABLE && theNode.value == targetVar {
 		newNode := getCopySubtree(subNode)
 		parentNode := theNode.parent
-		if (parentNode.left == theNode) {
+		if parentNode.left == theNode {
 			parentNode.left = newNode
-		} else if (parentNode.right == theNode) {
+		} else if parentNode.right == theNode {
 			parentNode.right = newNode
-		} else{
+		} else {
 			print ("SHOULDN'T BE HERE\n")
 			os.Exit(1)
 		}
@@ -327,7 +327,7 @@ func substituteTree(theNode *node, subNode *node, targetVar string) {
 // Return-value: node that contains a copy of a given branch.
 func getCopySubtree(subtree *node) *node{
 	//base case
-	if subtree == nil{
+	if subtree == nil {
 		return nil
 	}
 
@@ -351,17 +351,17 @@ func printTree(theNode *node) {
 
 // Helper-function for <printTree()>.
 func printPostOrder(theNode *node) {
-	if (theNode == nil) {
+	if theNode == nil {
 		return
 	}
-	if (theNode.token == LAMBDA) {
+	if theNode.token == LAMBDA {
 		fmt.Fprintf(os.Stdout, "(")
 		fmt.Fprintf(os.Stdout, "λ%s ", theNode.value)
-	} else if (theNode.token == VARIABLE) {
+	} else if theNode.token == VARIABLE {
 		fmt.Fprintf(os.Stdout, "%s", theNode.value)
 	}
 
-	if (theNode.left != nil && theNode.right != nil) {
+	if theNode.left != nil && theNode.right != nil {
 		fmt.Fprintf(os.Stdout, "(")
 	}
 	printPostOrder(theNode.left)
@@ -371,11 +371,10 @@ func printPostOrder(theNode *node) {
 		fmt.Fprintf(os.Stdout, " ")
 	}
 	printPostOrder(theNode.right)
-	if (theNode.token == LAMBDA || 
-	(theNode.left != nil && theNode.right != nil)) {
+	if theNode.token == LAMBDA || 
+	(theNode.left != nil && theNode.right != nil) {
 		fmt.Fprintf(os.Stdout, ")")
 	}
 }
 
 //*************************************************************************
-
