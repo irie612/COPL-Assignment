@@ -14,6 +14,7 @@ The program works correctly on most parts. Aspects that may be called deficienci
 
 
 GoLang Compiler Version: go 1.13
+
 Operating System (Kah Ming): Ubuntu 20.04.3 LTS
 
 ______________________________________________________________________________________________________________________________________________
@@ -41,7 +42,6 @@ Assignment 2 builds onto our previous iteration of lexer and parser. That is, wi
 
 1. Is the "current node" a valid node to apply beta-reduction on? Yes= go to step 2, No= go to step 3.
 2. Is alpha-conversion required? If so, apply alpha-conversion and then beta-reduction, if not, immediately apply beta-reduction. Return true.
-
 3. Move down the tree, starting with the left child. And check whether the current node is a valid node for beta-reduction (step 1). We keep moving down the tree through the left nodes, until we hit a NULL (or there was a valid beta-reduction). If we hit a NULL `betaReudction()` will return a false (to the previous recursive calls). And move to step 4. If the call of `betaReduction()` with the left child resulted into a true, then return true. Otherwise, also move to step 4.
 4. If the branch under the left child of the "current node" has no valid beta-reduction, then go down the tree through the right child of "current node". And go back to step 1. At this point, the "current node" will return the value of the `betaReduction()` call of the right child.
 
