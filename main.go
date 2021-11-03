@@ -254,10 +254,6 @@ func pexpr() *node {
 	} else { //var case
 		varNode := newNode(string(lexeme[:lexLen]), VARIABLE)
 		lex()
-		/*if nextToken == VARIABLE || nextToken == LEFT_P ||
-			nextToken == LAMBDA {
-			appendToOutputStr(")")
-		}*/
 		return varNode
 	}
 }
