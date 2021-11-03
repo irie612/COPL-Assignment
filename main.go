@@ -1,3 +1,18 @@
+// main.go
+// Programming Language: GoLang
+//
+// Course: Concepts of Programming Language
+// Assignment 2: Interpreter
+// Class 2, Group 11
+// Author(s) :	Emanuele Greco (s3375951), 
+//							Irie Railton (s3292037),
+//							Kah ming Wong (s2641976).
+//
+// Date: 3rd November, 2021.
+// 
+
+//*************************************************************************
+
 package main
 
 import (
@@ -12,43 +27,8 @@ import (
 
 //*************************************************************************
 
-//Global Variables
-var fstream *bufio.Reader
-var lexeme [100]rune    //the lexeme for each token
-var nextChar rune       //the current char in the file
-var lexLen int          //the current length of the lexeme
-var nextToken int       //the current token
-var charClass int       //classification of the current char
-var outputString string //the final output for the parsing
-var rootNode *node
-
-//*************************************************************************
-
-//Tokens
-const (
-	LEFT_P  = iota //left parenthesis
-	RIGHT_P        //right parenthesis
-	LAMBDA
-	VARIABLE
-	DOT
-	APPLICATION
-	EOF = -2 //end of file
-	EOL = -1 //end of line
-)
-
-//*************************************************************************
-
-//Character Classes.
-const (
-	LETTER = iota + 10
-	DIGIT
-	UNKNOWN = 99
-)
-
-//*************************************************************************
-
-//Function to read a given file byte for byte and set the appropriate
-//charClass. In the scenario that the EOF is reached return an error.
+// Function to read a given file byte for byte and set the appropriate
+// charClass. In the scenario that the EOF is reached return an error.
 func getChar() error {
 	var err error
 	nextChar, _, err = fstream.ReadRune()
@@ -70,7 +50,7 @@ func getChar() error {
 
 //*************************************************************************
 
-//Add char to the lexeme.
+// Add char to the lexeme.
 func addChar() {
 	if lexLen < 99 {
 		lexeme[lexLen] = nextChar
@@ -84,8 +64,8 @@ func addChar() {
 
 //*************************************************************************
 
-//Checks if the programs gives an error, if so
-//quit the program with the return value 1.
+// Checks if the programs gives an error, if so
+// quit the program with the return value 1.
 func checkError(err error) {
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "%s\n", err)
@@ -95,7 +75,7 @@ func checkError(err error) {
 
 //*************************************************************************
 
-//Gets the first nonblank character, but can also be a newline char.
+// Gets the first nonblank character, but can also be a newline char.
 func getNonBlank() {
 	for unicode.IsSpace(nextChar) && nextChar != '\n' {
 		getChar()
@@ -104,7 +84,7 @@ func getNonBlank() {
 
 //*************************************************************************
 
-//Function that assigns nextToken and lexeme
+// Function that assigns nextToken and lexeme
 func lex() {
 	clearLexeme()
 	lexLen = 0
@@ -119,61 +99,52 @@ func lex() {
 			getChar()
 		}
 		nextToken = VARIABLE
-		break
 	case DIGIT: //if the lexeme starts with a digit there's an error
 		fmt.Fprintf(os.Stderr, "Variable starts with digit \n")
 		os.Exit(1)
-		break
 	case UNKNOWN: //any other case
 		lookup(nextChar)
 		getChar()
-		break
 	}
 }
 
 //*************************************************************************
 
-//Assigns nextToken BASED on the character.
+// Assigns nextToken BASED on the character.
 func lookup(char rune) {
 	switch char {
 	case '(':
 		addChar()
 		nextToken = LEFT_P
-		break
 	case ')':
 		addChar()
 		nextToken = RIGHT_P
-		break
 	case 'λ':
 		fallthrough
 	case '\\':
 		addChar()
 		nextToken = LAMBDA
-		break
 	case '.':
 		addChar()
 		nextToken = DOT
-		break
 	case '\n':
 		lexeme[0] = 'E'
 		lexeme[1] = 'O'
 		lexeme[2] = 'L'
 		lexeme[3] = 0
 		nextToken = EOL
-		break
 	default:
 		lexeme[0] = 'E'
 		lexeme[1] = 'O'
 		lexeme[2] = 'F'
 		lexeme[3] = 0
 		nextToken = EOF
-		break
 	}
 }
 
 //*************************************************************************
 
-//Clears lexeme rune array.
+// Clears lexeme rune array.
 func clearLexeme() {
 	for i := range lexeme {
 		lexeme[i] = 0
@@ -182,25 +153,25 @@ func clearLexeme() {
 
 //*************************************************************************
 
-//Adds lexeme to outputString
+// Adds lexeme to outputString
 func addLexeme() {
 	outputString += string(lexeme[:lexLen])
 }
 
 //*************************************************************************
 
-//Appends string <b> to outputString
+// Appends string <b> to outputString
 func appendToOutputStr(b string) {
 	outputString += b
 }
 
 //*************************************************************************
 
-//Resolves matching left parentheses in instances where there are more
-//right parentheses.
+// Resolves matching left parentheses in instances where there are more
+// right parentheses.
 func matchParenthesis(startPos int) {
-	var noOpen = strings.Count(outputString[startPos:], "(")
-	var noClose = strings.Count(outputString[startPos:], ")")
+	noOpen := strings.Count(outputString[startPos:], "(")
+	noClose := strings.Count(outputString[startPos:], ")")
 	for noClose > noOpen {
 		outputString = outputString[:startPos] + "(" +
 			outputString[startPos:]
@@ -222,7 +193,7 @@ func expr() *node {
 
 //*************************************************************************
 
-//Finds valid expr_p expressions. May be "empty"
+// Finds valid expr_p expressions. May be "empty"
 func expr_p() []*node {
 	if !(nextToken == EOF || nextToken == EOL || nextToken == RIGHT_P) {
 		lexprNode := lexpr()
@@ -235,8 +206,8 @@ func expr_p() []*node {
 
 //*************************************************************************
 
-//Finds valid lambda abstractions. If there's no lambda abstractions,
-//continue to pexpr.
+// Finds valid lambda abstractions. If there's no lambda abstractions,
+// continue to pexpr.
 func lexpr() *node {
 	if nextToken == LAMBDA { //check if we have a lambda abstraction
 		lex()
@@ -263,7 +234,7 @@ func lexpr() *node {
 
 //*************************************************************************
 
-//Looks for a valid pexpr expression.
+// Looks for a valid pexpr expression.
 func pexpr() *node {
 	if nextToken == LEFT_P {
 		lex()
@@ -293,8 +264,8 @@ func pexpr() *node {
 
 //*************************************************************************
 
-//Parses each line in the text file, and outputs the parsed string
-//given that no errors has been encountered.
+// Parses each line in the text file, and outputs the parsed string
+// given that no errors has been encountered.
 func parse() {
 	lex()
 	if nextToken == EOF {
@@ -312,15 +283,12 @@ func parse() {
 
 	print("AFTER REDUCTION\n")
 	printTree(rootNode)
-	println()
-
 }
 
 //*************************************************************************
 
-//Main driver of the parsing
+// Main driver of the parsing.
 func main() {
-	//fmt.Fprintf(os.Stdout, "LEFT_P = %s\n RIGHT_P = %s\n LAMBDA = %s\n VARIABLE = %s\n DOT = %s\n APPLICATION = %s\n LETTER = %s\n DIGIT = %s\n UNKNOWN = %s\n ", strconv.Itoa(LEFT_P), strconv.Itoa(RIGHT_P), strconv.Itoa(LAMBDA), strconv.Itoa(VARIABLE), strconv.Itoa(DOT), strconv.Itoa(APPLICATION), strconv.Itoa(LETTER), strconv.Itoa(DIGIT), strconv.Itoa(UNKNOWN))
 	if len(os.Args) < 2 {
 		fmt.Fprintf(os.Stderr, "No arguments given. \n")
 		os.Exit(1)
@@ -330,12 +298,11 @@ func main() {
 	checkError(err)               // Checks whether file is valid
 	fstream = bufio.NewReader(f)  // Buffer for the reader
 
-	err = getChar() //read first character
+	err = getChar() // Read first character
 	checkError(err)
 
-	for err == nil && nextToken != EOF {
-		parse()
-	} //parses each line until EOF
+	parse() // Parses once
+
 	os.Exit(0) //exits the program with status 0 when everything is
 } //parsed correctly.
 

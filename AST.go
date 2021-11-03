@@ -8,7 +8,7 @@
 //							Irie Railton (s3292037),
 //							Kah ming Wong (s2641976).
 //
-// Date: 26th October, 2021
+// Date: 3rd November, 2021.
 // 
 
 //*************************************************************************
@@ -31,7 +31,6 @@ type node struct {
 	token				int //type of node
 }
 
-
 //*************************************************************************
 
 func newNode(value string, token int) *node {
@@ -43,6 +42,7 @@ func newNode(value string, token int) *node {
 
 //*************************************************************************
 
+// Function to link a node to its children.
 func (n *node) linkNodes(child ...*node) {
 	n.left = child[0]
 	if child[0] != nil {
@@ -201,7 +201,8 @@ func alphaDriver(capturedNodes []*node, freeVars []string) {
 
 //*************************************************************************
 
-//get variables bounded to node, change the value of them. then changes its own value
+// Get variables bounded to node, change the value of them,
+// then changes its own value.
 func alphaConversion(theNode *node, freshVar string) {
 
 	for _,capturedNode:= range getCapturedNodes(theNode){
@@ -212,14 +213,15 @@ func alphaConversion(theNode *node, freshVar string) {
 
 //*************************************************************************
 
+// Get fresh variable, that is not contained in <freeVars>.
 func getFreshVariable(freeVars []string) string{
 	maxSize := 100
 	charArray := []rune{}
 
 	for i:= 0; i < maxSize; i++ { //add a character to the string
 		charArray = append(charArray,rune(int('a')-1))
-		for j:= 0; j < 26; j++ { //increment the last character in the string (ex: a->b b->c ...)
-			charArray[i]++
+		for j:= 0; j < 26; j++ { 	//increment the last character 
+			charArray[i]++					//in the string (ex: a->b b->c ...)
 			if !isPresent(string(charArray), freeVars) {
 				return string(charArray)
 			}
@@ -230,7 +232,9 @@ func getFreshVariable(freeVars []string) string{
 
 //*************************************************************************
 
-//main function for the beta-reductions
+// Main function for the beta-reductions.
+// Exits the program if the maximum amount of reduction has been reached.
+// Else applies beta-reduction, if possible, and return true.
 func betaDriver (theNode *node) bool {
 	counter := 0
 	maxReduction := 100
@@ -240,16 +244,14 @@ func betaDriver (theNode *node) bool {
 			print("reached maximum number of reduction\n")
 			os.Exit(2)
 		}
-		//fmt.Fprintf(os.Stdout, "apply work\n")
 	}
 	return true
 }
 
 //*************************************************************************
 
-// Applies beta-reduction once to the first applicable branch with preference
-// to the left-hand side.
-// might be working with single pointer
+// Applies beta-reduction once to the first applicable branch with 
+// preference to the left-hand side.
 func betaReduction(theNode *node) bool {
 	if theNode == nil || theNode.token == VARIABLE {
 		return false
@@ -276,9 +278,9 @@ func betaReduction(theNode *node) bool {
 		return true
 	}else{
 		//Reduction is not possible. Check left branch. If no reduction found there, check right side
-		if betaReduction( theNode.left ) == false {
+		if betaReduction(theNode.left) == false {
 			return betaReduction(theNode.right)
-		} else{
+		} else {
 			return true
 		}
 	}
@@ -288,21 +290,20 @@ func betaReduction(theNode *node) bool {
 
 //*************************************************************************
 
-// substitutes the variables bound to the original lambda expression.
-// newNode is new independent node
+// Substitutes the variables bound to the original lambda expression.
+// <theNode>= nodes to apply substitution on.
+// <subNode>= what the substitution must result into.
+// targetVar= the variable of the original lambda expression.
 func substituteTree(theNode *node, subNode *node, targetVar string) {
 	if (theNode == nil) {
 		return
 	}
 
-	//nodeVar := []rune(theNode.value)
 	if (theNode.token == LAMBDA && theNode.value == targetVar) {
 		return
 	}
 
 	if (theNode.token == VARIABLE && theNode.value == targetVar) {
-		//var newNode *node
-		//newNode = subNode
 		newNode := getCopySubtree(subNode)
 		parentNode := theNode.parent
 		if (parentNode.left == theNode) {
@@ -314,7 +315,6 @@ func substituteTree(theNode *node, subNode *node, targetVar string) {
 			os.Exit(1)
 		}
 		newNode.parent = parentNode
-		//theNode = newNode
 	}
 
 	substituteTree(theNode.left, subNode, targetVar)
@@ -323,7 +323,8 @@ func substituteTree(theNode *node, subNode *node, targetVar string) {
 
 //*************************************************************************
 
-//get an exact copy of subtree. but every node is created again = indipendent
+// Copies a branch.
+// Return-value: node that contains a copy of a given branch.
 func getCopySubtree(subtree *node) *node{
 	//base case
 	if subtree == nil{
@@ -332,7 +333,7 @@ func getCopySubtree(subtree *node) *node{
 
 	//Create a new identical node and then link a copy of the left 
 	//and the right of the subtree
-	returnNode := newNode(subtree.value,subtree.token)
+	returnNode := newNode(subtree.value, subtree.token)
 	returnNode.linkNodes(getCopySubtree(subtree.left), 
 	getCopySubtree(subtree.right))
 	return returnNode
@@ -340,6 +341,7 @@ func getCopySubtree(subtree *node) *node{
 
 //*************************************************************************
 
+// Prints the tree.
 func printTree(theNode *node) {
 	printPostOrder(theNode)
 	fmt.Println()
@@ -347,6 +349,7 @@ func printTree(theNode *node) {
 
 //*************************************************************************
 
+// Helper-function for <printTree()>.
 func printPostOrder(theNode *node) {
 	if (theNode == nil) {
 		return
