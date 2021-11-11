@@ -4,12 +4,12 @@
 // Course: Concepts of Programming Language
 // Assignment 2: Interpreter
 // Class 2, Group 11
-// Author(s) :	Emanuele Greco (s3375951), 
-//							Irie Railton (s3292037),
-//							Kah ming Wong (s2641976).
+// Author(s) :	Emanuele Greco (s3375951),
+//				Irie Railton (s3292037),
+//				Kah ming Wong (s2641976).
 //
 // Date: 3rd November, 2021.
-// 
+//
 
 //*************************************************************************
 
@@ -21,7 +21,6 @@ import (
 	"fmt"
 	"io"
 	"os"
-	"strings"
 	"unicode"
 )
 
@@ -153,34 +152,6 @@ func clearLexeme() {
 
 //*************************************************************************
 
-// Adds lexeme to outputString
-func addLexeme() {
-	outputString += string(lexeme[:lexLen])
-}
-
-//*************************************************************************
-
-// Appends string <b> to outputString
-func appendToOutputStr(b string) {
-	outputString += b
-}
-
-//*************************************************************************
-
-// Resolves matching left parentheses in instances where there are more
-// right parentheses.
-func matchParenthesis(startPos int) {
-	noOpen := strings.Count(outputString[startPos:], "(")
-	noClose := strings.Count(outputString[startPos:], ")")
-	for noClose > noOpen {
-		outputString = outputString[:startPos] + "(" +
-			outputString[startPos:]
-		noOpen++
-	}
-}
-
-//*************************************************************************
-
 func expr() *node {
 	lexprNode := lexpr()
 	exprPNodes := expr_p()
@@ -273,7 +244,7 @@ func parse() {
 		os.Exit(1)
 	}
 
-	betaDriver(rootNode)
+	//betaDriver(rootNode)
 	printTree(rootNode)
 }
 

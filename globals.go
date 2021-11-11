@@ -4,12 +4,12 @@
 // Course: Concepts of Programming Language
 // Assignment 2: Interpreter
 // Class 2, Group 11
-// Author(s) :	Emanuele Greco (s3375951), 
-//							Irie Railton (s3292037),
-//							Kah ming Wong (s2641976).
+// Author(s) :	Emanuele Greco (s3375951),
+//				Irie Railton (s3292037),
+//				Kah ming Wong (s2641976).
 //
 // Date: 3rd November, 2021.
-// 
+//
 
 //*************************************************************************
 

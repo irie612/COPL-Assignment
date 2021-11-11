@@ -6,18 +6,15 @@ CLASS: 2
 
 GROUP: 11
 
-AUTHOR(S): Emanuele Greco (s3375951), Irie Railton (s3292037) & Kah Ming wong (s2641976)
-
-
+AUTHOR(S): Emanuele Greco (s3375951), Irie Railton (s3292037), & Kah Ming wong (s2641976)
 
 GoLang Compiler Version: go 1.13
 
+Operating System (Kah Ming): Ubuntu 20.04.3 LTS
 
 Operating System (Emanuele): Ubuntu 20.04
 
-Operating System (Irie): Ubuntu 20.04
-
-Operating System (Kah Ming): Ubuntu 20.04.3 LTS
+Operating System (Irie): Ubuntu 20.04.1 LTS
 
 
 The program works correctly on most parts. Aspects that may be called deficiencies are:
