@@ -219,9 +219,15 @@ func pexpr() *node {
 		}
 		return exprNode
 	} else { //var case
-		varNode := newNode(string(lexeme[:lexLen]), VARIABLE)
-		lex()
-		return varNode
+		if unicode.IsLower(lexeme[0]) {
+			varNode := newNode(string(lexeme[:lexLen]), VARIABLE)
+			lex()
+			return varNode
+		} else {
+			fmt.Fprintf(os.Stderr, "VARIABLE NAME SHOULD NOT START WITH AN UPPERCASE")
+			os.Exit(1)
+			return nil
+		}
 	}
 }
 
