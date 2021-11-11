@@ -113,30 +113,26 @@ func lex() {
 func lookup(char rune) {
 	switch char {
 	case '(':
-		addChar()
 		nextToken = LEFT_P
 	case ')':
-		addChar()
 		nextToken = RIGHT_P
 	case 'λ':
 		fallthrough
 	case '\\':
 		addChar()
 		nextToken = LAMBDA
+	case ':':
+		nextToken = COLON
+	case '-':
+		getChar()
+		nextToken = ARROW
+	case '^':
+		nextToken = TYPE_ASS
 	case '.':
-		addChar()
 		nextToken = DOT
 	case '\n':
-		lexeme[0] = 'E'
-		lexeme[1] = 'O'
-		lexeme[2] = 'L'
-		lexeme[3] = 0
 		nextToken = EOL
 	default:
-		lexeme[0] = 'E'
-		lexeme[1] = 'O'
-		lexeme[2] = 'F'
-		lexeme[3] = 0
 		nextToken = EOF
 	}
 }

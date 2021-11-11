@@ -41,6 +41,9 @@ const (
 	VARIABLE
 	DOT
 	APPLICATION
+	COLON
+	TYPE_ASS
+	ARROW
 	EOF = -2 // end of file
 	EOL = -1 // end of line
 )
