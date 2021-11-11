@@ -29,7 +29,8 @@ var lexLen int          // the current length of the lexeme
 var nextToken int       // the current token
 var charClass int       // classification of the current char
 var outputString string // the final output for the parsing
-var rootNode *node
+var rootExpressionNode *node
+var rootTypeNode *node
 
 //*************************************************************************
 

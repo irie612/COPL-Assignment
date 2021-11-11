@@ -162,7 +162,7 @@ func expr() *node {
 
 // Finds valid expr_p expressions. May be "empty"
 func expr_p() []*node {
-	if !(nextToken == EOF || nextToken == EOL || nextToken == RIGHT_P) {
+	if !(nextToken == EOF || nextToken == EOL || nextToken == RIGHT_P || nextToken == COLON) {
 		lexprNode := lexpr()
 		exprPNodes := expr_p()
 		exprPNodes = append([]*node{lexprNode}, exprPNodes...)
@@ -181,6 +181,10 @@ func lexpr() *node {
 		if nextToken == VARIABLE { //check if we have a variable
 			lambdaNode := newNode(string(lexeme[:lexLen]), LAMBDA)
 			lex()
+			if nextToken == TYPE_ASS {
+				lex()
+				lambdaNode.right = typeParse() //right == type of the lambda expression
+			}
 			if nextToken != EOL && nextToken != EOF {
 				lambdaNode.linkNodes(lexpr())
 				return lambdaNode
@@ -234,7 +238,15 @@ func parse() {
 	if nextToken == EOF {
 		return
 	}
-	rootNode = expr()
+	rootTypeNode = typeParse()
+	rootExpressionNode = expr()
+	if nextToken != COLON {
+		fmt.Fprintf(os.Stderr, "WTF\n")
+	} else {
+		lex()
+		rootTypeNode = typeParse()
+	}
+
 	if nextToken != EOL && nextToken != EOF {
 		fmt.Fprintf(os.Stderr, "INPUT STRING NOT FULLY PARSED\n")
 		os.Exit(1)
@@ -259,7 +271,7 @@ func main() {
 
 	parse() // Parses once
 
-	printTree(rootNode)
+	printTree(rootExpressionNode)
 
 	os.Exit(0) //exits the program with status 0 when everything is
 	//parsed correctly.
