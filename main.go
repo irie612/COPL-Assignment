@@ -243,9 +243,6 @@ func parse() {
 		fmt.Fprintf(os.Stderr, "INPUT STRING NOT FULLY PARSED\n")
 		os.Exit(1)
 	}
-
-	//betaDriver(rootNode)
-	printTree(rootNode)
 }
 
 //*************************************************************************
@@ -266,7 +263,10 @@ func main() {
 
 	parse() // Parses once
 
+	printTree(rootNode)
+
 	os.Exit(0) //exits the program with status 0 when everything is
-} //parsed correctly.
+	//parsed correctly.
+}
 
 //*************************************************************************
