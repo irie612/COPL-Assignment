@@ -93,7 +93,7 @@ func lex() {
 	switch charClass {
 	case LETTER: //if the lexeme starts with a letter nextToken is a variable
 		addChar()
-		checkError(getChar())
+		_ = getChar()
 		for charClass == LETTER || charClass == DIGIT {
 			addChar()
 			checkError(getChar())
@@ -104,7 +104,7 @@ func lex() {
 		os.Exit(1)
 	case UNKNOWN: //any other case
 		lookup(nextChar)
-		checkError(getChar())
+		_ = getChar()
 	}
 }
 
@@ -165,8 +165,8 @@ func main() {
 
 	parse() // Parses once
 
-	_, err = fmt.Fprintf(os.Stdout, printTree(rootExpressionNode)+":"+
-		printTree(rootTypeNode))
+	_, err = fmt.Fprintf(os.Stdout, rootExpressionNode.toString()+":"+
+		rootTypeNode.toString())
 	checkError(err)
 
 	os.Exit(0) //exits the program with status 0 when everything is

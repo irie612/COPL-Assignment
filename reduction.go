@@ -16,7 +16,6 @@
 package main
 
 import (
-	"fmt"
 	"os"
 )
 
@@ -287,44 +286,6 @@ func getCopySubtree(subtree *node) *node {
 	returnNode.linkNodes(getCopySubtree(subtree.left),
 		getCopySubtree(subtree.right))
 	return returnNode
-}
-
-//*************************************************************************
-
-// Prints the tree.
-func printTree(theNode *node) {
-	printPostOrder(theNode)
-	fmt.Println()
-}
-
-//*************************************************************************
-
-// Helper-function for <printTree()>.
-func printPostOrder(theNode *node) {
-	if theNode == nil {
-		return
-	}
-	if theNode.token == LAMBDA {
-		fmt.Fprintf(os.Stdout, "(")
-		fmt.Fprintf(os.Stdout, "λ%s ", theNode.value)
-	} else if theNode.token == VARIABLE {
-		fmt.Fprintf(os.Stdout, "%s", theNode.value)
-	}
-
-	if theNode.left != nil && theNode.right != nil {
-		fmt.Fprintf(os.Stdout, "(")
-	}
-	printPostOrder(theNode.left)
-
-	if (theNode.left != nil && theNode.right != nil) &&
-		(theNode.left.token == VARIABLE && theNode.right.token == VARIABLE) {
-		fmt.Fprintf(os.Stdout, " ")
-	}
-	printPostOrder(theNode.right)
-	if theNode.token == LAMBDA ||
-		(theNode.left != nil && theNode.right != nil) {
-		fmt.Fprintf(os.Stdout, ")")
-	}
 }
 
 //*************************************************************************
