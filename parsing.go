@@ -17,6 +17,7 @@ package main
 import (
 	"fmt"
 	"os"
+	"unicode"
 )
 
 //*************************************************************************
@@ -25,17 +26,16 @@ import (
 // given that no errors has been encountered.
 func parse() {
 	lex()
-	rootTypeNode = typeParse()
-	return
+
 	if nextToken == EOF {
 		return
 	}
 	rootExpressionNode = expr()
 	if nextToken != COLON {
-		fmt.Fprintf(os.Stderr, "WTF\n")
+		fmt.Fprintf(os.Stderr, "MISSING TYPE\n")
 	} else {
 		lex()
-		rootTypeNode = typeParse()
+		rootTypeNode = ema_typeParse()
 	}
 
 	if nextToken != EOL && nextToken != EOF {
@@ -83,12 +83,13 @@ func expr_p() []*node {
 func lexpr() *node {
 	if nextToken == LAMBDA { //check if we have a lambda abstraction
 		lex()
-		if nextToken == VARIABLE { //check if we have a variable
+		//check if we have a variable with a valid name
+		if nextToken == VARIABLE && !unicode.IsUpper(lexeme[0]){
 			lambdaNode := newNode(string(lexeme[:lexLen]), LAMBDA)
 			lex()
 			if nextToken == TYPE_ASS {
 				lex()
-				lambdaNode.right = typeParse() //right == type of the lambda expression
+				lambdaNode.right = ema_typeParse() //right == type of the lambda expression
 			}
 			if nextToken != EOL && nextToken != EOF {
 				lambdaNode.linkNodes(lexpr())
@@ -99,7 +100,7 @@ func lexpr() *node {
 				os.Exit(1)
 			}
 		} else { // nextToken != VARIABLE ERROR
-			fmt.Fprintf(os.Stderr, "NO VARIABLE AFTER LAMBDA TOKEN\n")
+			fmt.Fprintf(os.Stderr, "NO VALID VARIABLE AFTER LAMBDA TOKEN\n")
 			os.Exit(1)
 		}
 		return nil
@@ -127,10 +128,14 @@ func pexpr() *node {
 			lex()
 		}
 		return exprNode
-	} else { //var case
+	} else if nextToken==VARIABLE && !unicode.IsUpper(lexeme[0]){ //var case
 		varNode := newNode(string(lexeme[:lexLen]), VARIABLE)
 		lex()
 		return varNode
+	} else{
+		fmt.Fprintf(os.Stderr, "INVALID VARIABLE NAME\n")
+		os.Exit(1)
+		return nil
 	}
 }
 
@@ -221,7 +226,11 @@ func ptypeParse() *node {
 	}
 }
 
-//*************************************************************************
+/********************************************************
+*		 Grammar for ema_type parsing		    		*
+*	<type> 	::= <uvar> <type'> | '(' <type> )' <type'> 	*
+*	<type'> ::= '->' <type> | ε   	   			   	   	*
+********************************************************/
 func ema_typeParse() *node {
 	var leftNode *node
 	var arrowNode *node
@@ -232,7 +241,7 @@ func ema_typeParse() *node {
 			fmt.Fprintf(os.Stdout, "MISSING RIGHT PARENTHESIS\n")
 		}
 		lex()
-	} else if nextToken == VARIABLE {
+	} else if nextToken == VARIABLE && unicode.IsUpper(lexeme[0]) {
 		leftNode = newNode(string(lexeme[:lexLen]), VARIABLE)
 		lex()
 	} else {
@@ -247,12 +256,8 @@ func ema_typeParse() *node {
 		return arrowNode
 	}
 }
+//*************************************************************************
 
-/********************************************************
-*		 Grammar for ema_type parsing		    		*
-*	<type> 	::= <uvar> <type'> | '(' <type> )' <type'> 	* //Could we use just <type'>?
-*	<type'> ::= '->' <type> | ε   	   			   	   	*
-********************************************************/
 func ema_typeParse_p() *node {
 	if nextToken == ARROW {
 		lex()

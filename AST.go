@@ -68,6 +68,7 @@ func appTreeCreate(nodes []*node) *node {
 //*************************************************************************
 
 //function to convert a tree into a string recursively
+//It has a bug Irie porcodio !!!!!!"
 func (n *node) toString() string {
 	var returnString string
 	if n == nil {
