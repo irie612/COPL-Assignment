@@ -21,9 +21,9 @@ package main
 type node struct {
 	parent *node
 	left   *node
-	right  *node
+	right  *node  //used to store the type of the node for Lambda abstraction nodes and for variables in contextStack
 	value  string
-	token  int //type of node
+	token  int   //type of node
 }
 
 //*************************************************************************
