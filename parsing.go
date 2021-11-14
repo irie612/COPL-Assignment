@@ -35,7 +35,7 @@ func parse() {
 		fmt.Fprintf(os.Stderr, "MISSING TYPE\n")
 	} else {
 		lex()
-		rootTypeNode = ema_typeParse()
+		rootTypeNode = typeParse()
 	}
 
 	if nextToken != EOL && nextToken != EOF {
@@ -43,7 +43,6 @@ func parse() {
 		os.Exit(1)
 	}
 }
-
 //*************************************************************************
 /************************************************
 *		 Grammar for expression parsing			*
@@ -52,6 +51,7 @@ func parse() {
 *	<lexpr>	::= <pexpr> | λ<var>^<type><expr>	*
 *	<pexpr>	::= <var> | '('<expr>')'	   		*
 ************************************************/
+
 
 func expr() *node {
 	lexprNode := lexpr()
@@ -89,7 +89,7 @@ func lexpr() *node {
 			lex()
 			if nextToken == TYPE_ASS {
 				lex()
-				lambdaNode.right = ema_typeParse() //right == type of the lambda expression
+				lambdaNode.right = typeParse() //right == type of the lambda expression
 			}
 			if nextToken != EOL && nextToken != EOF {
 				lambdaNode.linkNodes(lexpr())
@@ -140,103 +140,17 @@ func pexpr() *node {
 }
 
 //*************************************************************************
-/*******************************************
-*		 Grammar for type parsing		       *
-*	<type> 	::= <ptype> '->' <type'> | <ptype> * //Could we use just <type'>?
-*	<type'> ::= <ptype> '->' <type'> | ε   	   *
-*	<ptype>	::= <uvar> | '('<type>')'	       *
-*******************************************/
-// type "A ->" doesn't work T_T
-//implementation of <type> line of grammar
-func typeParse() *node {
-	if !(nextToken == LEFT_P || nextToken == VARIABLE) {
-		fmt.Fprintf(os.Stderr, "MISSING EXPRESSION\n")
-		os.Exit(1)
-	}
-	ptypeNode := ptypeParse() //get left side
-	//if there is a right side get it else return left side
-	if nextToken == ARROW {
-		lex()
-		if nextToken == VARIABLE || nextToken == LEFT_P {
-			arrow := newNode("", 8)
-			arrow.linkNodes(ptypeNode, type_pParse()) //get right side and link
-			return arrow
-		} else {
-			fmt.Fprintf(os.Stderr, "MISSING EXPRESSION OR VARIABLE AFTER ARROW\n")
-			os.Exit(1)
-			return nil
-		}
-	} else if nextToken == VARIABLE || nextToken == LEFT_P {
-		fmt.Fprintf(os.Stderr, "MISSING ARROW IN BETWEEN EXPRESSIONS\n")
-		os.Exit(1)
-		return nil
-	} else {
-		return ptypeNode
-	}
-}
-
-//*************************************************************************
-
-//implementation of <type'> line of grammar
-func type_pParse() *node {
-	if !(nextToken == EOF || nextToken == EOL || nextToken == RIGHT_P) {
-		ptypeNode := ptypeParse()
-		if nextToken == ARROW || nextToken == LEFT_P {
-			lex()
-			if nextToken == VARIABLE || nextToken == LEFT_P {
-				arrow := newNode("", 8)
-				arrow.linkNodes(ptypeNode, type_pParse()) //get right side and link
-				return arrow
-			} else {
-				fmt.Fprintf(os.Stderr, "MISSING EXPRESSION OR VARIABLE AFTER ARROW\n")
-				os.Exit(1)
-				return nil
-			}
-		} else {
-			return ptypeNode
-		}
-	} else {
-		return nil
-	}
-}
-
-//*************************************************************************
-
-//implementation of <ptype> line of grammar
-func ptypeParse() *node {
-	if nextToken == LEFT_P {
-		lex()
-		if nextToken == RIGHT_P {
-			fmt.Fprintf(os.Stderr,
-				"MISSING EXPRESSION AFTER OPENING PARENTHESIS\n")
-			os.Exit(1)
-		}
-		typeNode := typeParse()
-		if nextToken != RIGHT_P {
-			fmt.Fprintf(os.Stderr, "MISSING CLOSING PARENTHESIS\n")
-			os.Exit(1)
-		} else {
-			lex()
-		}
-		return typeNode
-	} else {
-		varNode := newNode(string(lexeme[:lexLen]), VARIABLE)
-		lex()
-		return varNode
-	}
-}
-
 /********************************************************
 *		 Grammar for ema_type parsing		    		*
 *	<type> 	::= <uvar> <type'> | '(' <type> )' <type'> 	*
 *	<type'> ::= '->' <type> | ε   	   			   	   	*
 ********************************************************/
-func ema_typeParse() *node {
+func typeParse() *node {
 	var leftNode *node
 	var arrowNode *node
 	if nextToken == LEFT_P {
 		lex()
-		leftNode = ema_typeParse()
+		leftNode = typeParse()
 		if nextToken != RIGHT_P {
 			fmt.Fprintf(os.Stdout, "MISSING RIGHT PARENTHESIS\n")
 		}
@@ -248,7 +162,7 @@ func ema_typeParse() *node {
 		fmt.Fprintf(os.Stderr, "ILL FORMED TYPE EXPRESSION\n")
 		os.Exit(1)
 	}
-	arrowNode = ema_typeParse_p()
+	arrowNode = typeParse_p()
 	if arrowNode == nil {
 		return leftNode
 	} else {
@@ -258,11 +172,11 @@ func ema_typeParse() *node {
 }
 //*************************************************************************
 
-func ema_typeParse_p() *node {
+func typeParse_p() *node {
 	if nextToken == ARROW {
 		lex()
 		arrowNode := newNode("", ARROW)
-		arrowNode.linkNodes(nil, ema_typeParse())
+		arrowNode.linkNodes(nil, typeParse())
 		return arrowNode
 	} else {
 		return nil
