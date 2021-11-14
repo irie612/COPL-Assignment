@@ -146,9 +146,15 @@ func typeParse() *node {
 	//if there is a right side get it else return left side
 	if nextToken == ARROW || nextToken == LEFT_P {
 		lex()
-		arrow := newNode("", 8)
-		arrow.linkNodes(ptypeNode, type_pParse()) //get right side and link
-		return arrow
+		if nextToken == VARIABLE || nextToken == LEFT_P {
+			arrow := newNode("", 8)
+			arrow.linkNodes(ptypeNode, type_pParse()) //get right side and link
+			return arrow
+		} else {
+			fmt.Fprintf(os.Stderr, "MISSING EXPRESSION OR VARIABLE AFTER ARROW\n")
+			os.Exit(1)
+			return nil
+		}
 	} else {
 		return ptypeNode
 	}
@@ -162,9 +168,15 @@ func type_pParse() *node {
 		ptypeNode := ptypeParse()
 		if nextToken == ARROW || nextToken == LEFT_P {
 			lex()
-			arrow := newNode("", 8)
-			arrow.linkNodes(ptypeNode, type_pParse())
-			return arrow
+			if nextToken == VARIABLE || nextToken == LEFT_P {
+				arrow := newNode("", 8)
+				arrow.linkNodes(ptypeNode, type_pParse()) //get right side and link
+				return arrow
+			} else {
+				fmt.Fprintf(os.Stderr, "MISSING EXPRESSION OR VARIABLE AFTER ARROW\n")
+				os.Exit(1)
+				return nil
+			}
 		} else {
 			return ptypeNode
 		}
