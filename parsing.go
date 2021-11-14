@@ -31,12 +31,18 @@ func parse() {
 		return
 	}
 	rootExpressionNode = expr()
+
+
 	if nextToken != COLON {
 		fmt.Fprintf(os.Stderr, "MISSING TYPE\n")
 	} else {
 		lex()
 		rootTypeNode = typeParse()
 	}
+
+	/***** REMOVE*****/
+	println(context.findStatement(rootExpressionNode.left.right.value,rootExpressionNode.right))
+	/***** REMOVE*****/
 
 	if nextToken != EOL && nextToken != EOF {
 		fmt.Fprintf(os.Stderr, "INPUT STRING NOT FULLY PARSED\n")
@@ -87,10 +93,16 @@ func lexpr() *node {
 		if nextToken == VARIABLE && !unicode.IsUpper(lexeme[0]){
 			lambdaNode := newNode(string(lexeme[:lexLen]), LAMBDA)
 			lex()
+			//get the type of the lambda abstraction
 			if nextToken == TYPE_ASS {
 				lex()
 				lambdaNode.right = typeParse() //right == type of the lambda expression
 			}
+
+			/***** REMOVE*****/
+			context.addStatement(lambdaNode.value,lambdaNode.right)
+			/***** REMOVE*****/
+
 			if nextToken != EOL && nextToken != EOF {
 				lambdaNode.linkNodes(lexpr())
 				return lambdaNode

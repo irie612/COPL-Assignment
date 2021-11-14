@@ -6,7 +6,7 @@ type contextStack struct {
 
 //*************************************************************************
 
-func ( cs contextStack ) addStatement(varName string, typeNode *node)  {
+func (cs *contextStack) addStatement(varName string, typeNode *node)  {
 	//create a node that will be inserted in the context
 	n := newNode(varName,VARIABLE)
 	//add n on top of the current head, add type on the right of the node
