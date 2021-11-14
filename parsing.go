@@ -25,6 +25,8 @@ import (
 // given that no errors has been encountered.
 func parse() {
 	lex()
+	rootTypeNode = ema_typeParse()
+	return
 	if nextToken == EOF {
 		return
 	}
@@ -48,7 +50,7 @@ func parse() {
 *	<expr> 	::= <lexpr> <expr'>					*
 *	<expr'> ::= <lexpr> <expr'> | ε   	   		*
 *	<lexpr>	::= <pexpr> | λ<var>^<type><expr>	*
-*	<pexpr>	::= <var> | '('<type>')'	   		*
+*	<pexpr>	::= <var> | '('<expr>')'	   		*
 ************************************************/
 
 func expr() *node {
@@ -134,12 +136,12 @@ func pexpr() *node {
 
 //*************************************************************************
 /*******************************************
-*		 Grammar for type parsing		   *
-*	<type> 	::= <ptype> '->' <type'>	   *
-*	<type'> ::= <ptype> '->' <type'> | ε   *
-*	<ptype>	::= <uvar> | '('<type>')'	   *
+*		 Grammar for type parsing		       *
+*	<type> 	::= <ptype> '->' <type'> | <ptype> * //Could we use just <type'>?
+*	<type'> ::= <ptype> '->' <type'> | ε   	   *
+*	<ptype>	::= <uvar> | '('<type>')'	       *
 *******************************************/
-
+// type "A ->" doesn't work T_T
 //implementation of <type> line of grammar
 func typeParse() *node {
 	ptypeNode := ptypeParse() //get left side
@@ -200,3 +202,39 @@ func ptypeParse() *node {
 }
 
 //*************************************************************************
+func ema_typeParse() *node {
+	var leftNode *node
+	var arrowNode *node
+	if nextToken == LEFT_P{
+		lex()
+		leftNode = ema_typeParse()
+		if nextToken != RIGHT_P{
+			fmt.Fprintf(os.Stdout,"MISSING RIGHT PARENTHESIS\n")
+		}
+		lex()
+	} else if nextToken == VARIABLE{
+		leftNode = newNode(string(lexeme[:lexLen]),VARIABLE)
+		lex()
+	} else{
+		fmt.Fprintf(os.Stderr, "ILL FORMED TYPE EXPRESSION\n")
+		os.Exit(1)
+	}
+	arrowNode = ema_typeParse_p()
+	if arrowNode == nil{
+		return leftNode
+	}else{
+		arrowNode.linkNodes(leftNode)
+		return arrowNode
+	}
+}
+
+func ema_typeParse_p() *node{
+	if nextToken == ARROW{
+		lex()
+		arrowNode := newNode("",ARROW)
+		arrowNode.linkNodes(nil,ema_typeParse())
+		return arrowNode
+	}else{
+		return nil
+	}
+}

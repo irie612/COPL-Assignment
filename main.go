@@ -167,6 +167,7 @@ func main() {
 
 	_, err = fmt.Fprintf(os.Stdout, rootExpressionNode.toString()+":"+
 		rootTypeNode.toString())
+	println()
 	checkError(err)
 
 	os.Exit(0) //exits the program with status 0 when everything is
