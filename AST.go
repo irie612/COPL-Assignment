@@ -2,13 +2,13 @@
 // Programming Language: GoLang
 //
 // Course: Concepts of Programming Language
-// Assignment 2: Interpreter
+// Assignment 3: Type checker
 // Class 2, Group 11
 // Author(s) :	Emanuele Greco (s3375951),
-//							Irie Railton (s3292037),
-//							Kah ming Wong (s2641976).
+//				Irie Railton (s3292037),
+//				Kah ming Wong (s2641976).
 //
-// Date: 3rd November, 2021.
+// Date: 13th November, 2021.
 //
 
 //*************************************************************************
@@ -66,3 +66,37 @@ func appTreeCreate(nodes []*node) *node {
 }
 
 //*************************************************************************
+
+//function to convert a tree into a string recursively
+//It has a bug Irie porcodio !!!!!!"
+func (n *node) toString() string {
+	var returnString string
+	if n == nil {
+		return ""
+	}
+	if n.token == LAMBDA {
+		returnString = "λ" + n.value + "^" +
+			n.right.toString() + " " +
+			n.left.toString()
+	} else if n.token == VARIABLE {
+		returnString = n.value
+	} else if n.token == APPLICATION {
+		if n.left.token == VARIABLE {
+			returnString = n.left.toString()
+		} else {
+			returnString = "(" + n.left.toString() + ")"
+		}
+		if n.left.token == VARIABLE &&
+			n.right.token == VARIABLE {
+			returnString += " " + n.right.toString()
+		} else if n.right.token != VARIABLE {
+			returnString += "(" + n.right.toString() + ")"
+		} else {
+			returnString += n.right.toString()
+		}
+	} else if n.token == ARROW {
+		returnString = "(" + n.left.toString() + "→" +
+			n.right.toString() + ")"
+	}
+	return returnString
+}
