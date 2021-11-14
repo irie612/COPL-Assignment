@@ -25,7 +25,7 @@ import (
 // given that no errors has been encountered.
 func parse() {
 	lex()
-	rootTypeNode = ema_typeParse()
+	rootTypeNode = typeParse()
 	return
 	if nextToken == EOF {
 		return
@@ -144,9 +144,13 @@ func pexpr() *node {
 // type "A ->" doesn't work T_T
 //implementation of <type> line of grammar
 func typeParse() *node {
+	if !(nextToken == LEFT_P || nextToken == VARIABLE) {
+		fmt.Fprintf(os.Stderr, "MISSING EXPRESSION\n")
+		os.Exit(1)
+	}
 	ptypeNode := ptypeParse() //get left side
 	//if there is a right side get it else return left side
-	if nextToken == ARROW || nextToken == LEFT_P {
+	if nextToken == ARROW {
 		lex()
 		if nextToken == VARIABLE || nextToken == LEFT_P {
 			arrow := newNode("", 8)
@@ -157,6 +161,10 @@ func typeParse() *node {
 			os.Exit(1)
 			return nil
 		}
+	} else if nextToken == VARIABLE || nextToken == LEFT_P {
+		fmt.Fprintf(os.Stderr, "MISSING ARROW IN BETWEEN EXPRESSIONS\n")
+		os.Exit(1)
+		return nil
 	} else {
 		return ptypeNode
 	}
@@ -217,40 +225,41 @@ func ptypeParse() *node {
 func ema_typeParse() *node {
 	var leftNode *node
 	var arrowNode *node
-	if nextToken == LEFT_P{
+	if nextToken == LEFT_P {
 		lex()
 		leftNode = ema_typeParse()
-		if nextToken != RIGHT_P{
-			fmt.Fprintf(os.Stdout,"MISSING RIGHT PARENTHESIS\n")
+		if nextToken != RIGHT_P {
+			fmt.Fprintf(os.Stdout, "MISSING RIGHT PARENTHESIS\n")
 		}
 		lex()
-	} else if nextToken == VARIABLE{
-		leftNode = newNode(string(lexeme[:lexLen]),VARIABLE)
+	} else if nextToken == VARIABLE {
+		leftNode = newNode(string(lexeme[:lexLen]), VARIABLE)
 		lex()
-	} else{
+	} else {
 		fmt.Fprintf(os.Stderr, "ILL FORMED TYPE EXPRESSION\n")
 		os.Exit(1)
 	}
 	arrowNode = ema_typeParse_p()
-	if arrowNode == nil{
+	if arrowNode == nil {
 		return leftNode
-	}else{
+	} else {
 		arrowNode.linkNodes(leftNode)
 		return arrowNode
 	}
 }
-/*******************************************
-*		 Grammar for ema_type parsing		       *
-*	<type> 	::= <uvar> <type'> | '(' <type> )' <type'> * //Could we use just <type'>?
-*	<type'> ::= '->' <type> | ε   	   *
-*******************************************/
-func ema_typeParse_p() *node{
-	if nextToken == ARROW{
+
+/********************************************************
+*		 Grammar for ema_type parsing		    		*
+*	<type> 	::= <uvar> <type'> | '(' <type> )' <type'> 	* //Could we use just <type'>?
+*	<type'> ::= '->' <type> | ε   	   			   	   	*
+********************************************************/
+func ema_typeParse_p() *node {
+	if nextToken == ARROW {
 		lex()
-		arrowNode := newNode("",ARROW)
-		arrowNode.linkNodes(nil,ema_typeParse())
+		arrowNode := newNode("", ARROW)
+		arrowNode.linkNodes(nil, ema_typeParse())
 		return arrowNode
-	}else{
+	} else {
 		return nil
 	}
 }
