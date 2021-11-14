@@ -239,7 +239,11 @@ func ema_typeParse() *node {
 		return arrowNode
 	}
 }
-
+/*******************************************
+*		 Grammar for ema_type parsing		       *
+*	<type> 	::= <uvar> <type'> | '(' <type> )' <type'> * //Could we use just <type'>?
+*	<type'> ::= '->' <type> | ε   	   *
+*******************************************/
 func ema_typeParse_p() *node{
 	if nextToken == ARROW{
 		lex()
