@@ -68,16 +68,23 @@ func appTreeCreate(nodes []*node) *node {
 //*************************************************************************
 
 //function to convert a tree into a string recursively
-//It has a bug Irie porcodio !!!!!!"
 func (n *node) toString() string {
 	var returnString string
 	if n == nil {
 		return ""
 	}
 	if n.token == LAMBDA {
-		returnString = "λ" + n.value + "^" +
-			n.right.toString() + " " +
-			n.left.toString()
+		returnString = "λ" + n.value + "^"
+		if n.right.token == ARROW {
+			returnString += "(" + n.right.toString() + ")"
+		} else {
+			returnString += n.right.toString()
+		}
+		if n.left.token == APPLICATION || n.left.token == LAMBDA {
+			returnString += "(" + n.left.toString() + ")"
+		} else {
+			returnString += " " + n.left.toString()
+		}
 	} else if n.token == VARIABLE {
 		returnString = n.value
 	} else if n.token == APPLICATION {
@@ -95,8 +102,8 @@ func (n *node) toString() string {
 			returnString += n.right.toString()
 		}
 	} else if n.token == ARROW {
-		returnString = "(" + n.left.toString() + "→" +
-			n.right.toString() + ")"
+		returnString = n.left.toString() + "→" +
+			n.right.toString()
 	}
 	return returnString
 }
