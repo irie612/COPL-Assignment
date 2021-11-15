@@ -76,12 +76,12 @@ func (n *node) toString() string {
 	if n.token == LAMBDA {
 		returnString = "λ" + n.value + "^"
 		if n.right.token == ARROW {
-			returnString += "(" + n.right.toString() + ")"
+			returnString += bracket(n.right.toString())
 		} else {
 			returnString += n.right.toString()
 		}
 		if n.left.token == APPLICATION || n.left.token == LAMBDA {
-			returnString += "(" + n.left.toString() + ")"
+			returnString += bracket(n.left.toString())
 		} else {
 			returnString += " " + n.left.toString()
 		}
@@ -91,13 +91,13 @@ func (n *node) toString() string {
 		if n.left.token == VARIABLE {
 			returnString = n.left.toString()
 		} else {
-			returnString = "(" + n.left.toString() + ")"
+			returnString = bracket(n.left.toString())
 		}
 		if n.left.token == VARIABLE &&
 			n.right.token == VARIABLE {
 			returnString += " " + n.right.toString()
 		} else if n.right.token != VARIABLE {
-			returnString += "(" + n.right.toString() + ")"
+			returnString += bracket(n.right.toString())
 		} else {
 			returnString += n.right.toString()
 		}
@@ -106,4 +106,8 @@ func (n *node) toString() string {
 			n.right.toString()
 	}
 	return returnString
+}
+
+func bracket(s string) string {
+	return "(" + s + ")"
 }
