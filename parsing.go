@@ -32,14 +32,14 @@ func parse() {
 	}
 	rootExpressionNode = expr()
 	if nextToken != COLON {
-		fmt.Fprintf(os.Stderr, "MISSING TYPE\n")
+		_, _ = fmt.Fprintf(os.Stderr, "MISSING TYPE\n")
 	} else {
 		lex()
 		rootTypeNode = ema_typeParse()
 	}
 
 	if nextToken != EOL && nextToken != EOF {
-		fmt.Fprintf(os.Stderr, "INPUT STRING NOT FULLY PARSED\n")
+		_, _ = fmt.Fprintf(os.Stderr, "INPUT STRING NOT FULLY PARSED\n")
 		os.Exit(1)
 	}
 }
@@ -84,7 +84,7 @@ func lexpr() *node {
 	if nextToken == LAMBDA { //check if we have a lambda abstraction
 		lex()
 		//check if we have a variable with a valid name
-		if nextToken == VARIABLE && !unicode.IsUpper(lexeme[0]){
+		if nextToken == VARIABLE && !unicode.IsUpper(lexeme[0]) {
 			lambdaNode := newNode(string(lexeme[:lexLen]), LAMBDA)
 			lex()
 			if nextToken == TYPE_ASS {
@@ -95,12 +95,12 @@ func lexpr() *node {
 				lambdaNode.linkNodes(lexpr())
 				return lambdaNode
 			} else {
-				fmt.Fprintf(os.Stderr,
+				_, _ = fmt.Fprintf(os.Stderr,
 					"MISSING EXPRESSION AFTER LAMBDA ABSTRACTION\n")
 				os.Exit(1)
 			}
 		} else { // nextToken != VARIABLE ERROR
-			fmt.Fprintf(os.Stderr, "NO VALID VARIABLE AFTER LAMBDA TOKEN\n")
+			_, _ = fmt.Fprintf(os.Stderr, "NO VALID VARIABLE AFTER LAMBDA TOKEN\n")
 			os.Exit(1)
 		}
 		return nil
@@ -116,24 +116,24 @@ func pexpr() *node {
 	if nextToken == LEFT_P {
 		lex()
 		if nextToken == RIGHT_P {
-			fmt.Fprintf(os.Stderr,
+			_, _ = fmt.Fprintf(os.Stderr,
 				"MISSING EXPRESSION AFTER OPENING PARENTHESIS\n")
 			os.Exit(1)
 		}
 		exprNode := expr()
 		if nextToken != RIGHT_P {
-			fmt.Fprintf(os.Stderr, "MISSING CLOSING PARENTHESIS\n")
+			_, _ = fmt.Fprintf(os.Stderr, "MISSING CLOSING PARENTHESIS\n")
 			os.Exit(1)
 		} else {
 			lex()
 		}
 		return exprNode
-	} else if nextToken==VARIABLE && !unicode.IsUpper(lexeme[0]){ //var case
+	} else if nextToken == VARIABLE && !unicode.IsUpper(lexeme[0]) { //var case
 		varNode := newNode(string(lexeme[:lexLen]), VARIABLE)
 		lex()
 		return varNode
-	} else{
-		fmt.Fprintf(os.Stderr, "INVALID VARIABLE NAME\n")
+	} else {
+		_, _ = fmt.Fprintf(os.Stderr, "INVALID VARIABLE NAME\n")
 		os.Exit(1)
 		return nil
 	}
@@ -150,7 +150,7 @@ func pexpr() *node {
 //implementation of <type> line of grammar
 func typeParse() *node {
 	if !(nextToken == LEFT_P || nextToken == VARIABLE) {
-		fmt.Fprintf(os.Stderr, "MISSING EXPRESSION\n")
+		_, _ = fmt.Fprintf(os.Stderr, "MISSING EXPRESSION\n")
 		os.Exit(1)
 	}
 	ptypeNode := ptypeParse() //get left side
@@ -162,12 +162,12 @@ func typeParse() *node {
 			arrow.linkNodes(ptypeNode, type_pParse()) //get right side and link
 			return arrow
 		} else {
-			fmt.Fprintf(os.Stderr, "MISSING EXPRESSION OR VARIABLE AFTER ARROW\n")
+			_, _ = fmt.Fprintf(os.Stderr, "MISSING EXPRESSION OR VARIABLE AFTER ARROW\n")
 			os.Exit(1)
 			return nil
 		}
 	} else if nextToken == VARIABLE || nextToken == LEFT_P {
-		fmt.Fprintf(os.Stderr, "MISSING ARROW IN BETWEEN EXPRESSIONS\n")
+		_, _ = fmt.Fprintf(os.Stderr, "MISSING ARROW IN BETWEEN EXPRESSIONS\n")
 		os.Exit(1)
 		return nil
 	} else {
@@ -188,7 +188,7 @@ func type_pParse() *node {
 				arrow.linkNodes(ptypeNode, type_pParse()) //get right side and link
 				return arrow
 			} else {
-				fmt.Fprintf(os.Stderr, "MISSING EXPRESSION OR VARIABLE AFTER ARROW\n")
+				_, _ = fmt.Fprintf(os.Stderr, "MISSING EXPRESSION OR VARIABLE AFTER ARROW\n")
 				os.Exit(1)
 				return nil
 			}
@@ -207,13 +207,13 @@ func ptypeParse() *node {
 	if nextToken == LEFT_P {
 		lex()
 		if nextToken == RIGHT_P {
-			fmt.Fprintf(os.Stderr,
+			_, _ = fmt.Fprintf(os.Stderr,
 				"MISSING EXPRESSION AFTER OPENING PARENTHESIS\n")
 			os.Exit(1)
 		}
 		typeNode := typeParse()
 		if nextToken != RIGHT_P {
-			fmt.Fprintf(os.Stderr, "MISSING CLOSING PARENTHESIS\n")
+			_, _ = fmt.Fprintf(os.Stderr, "MISSING CLOSING PARENTHESIS\n")
 			os.Exit(1)
 		} else {
 			lex()
@@ -238,14 +238,14 @@ func ema_typeParse() *node {
 		lex()
 		leftNode = ema_typeParse()
 		if nextToken != RIGHT_P {
-			fmt.Fprintf(os.Stdout, "MISSING RIGHT PARENTHESIS\n")
+			_, _ = fmt.Fprintf(os.Stdout, "MISSING RIGHT PARENTHESIS\n")
 		}
 		lex()
 	} else if nextToken == VARIABLE && unicode.IsUpper(lexeme[0]) {
 		leftNode = newNode(string(lexeme[:lexLen]), VARIABLE)
 		lex()
 	} else {
-		fmt.Fprintf(os.Stderr, "ILL FORMED TYPE EXPRESSION\n")
+		_, _ = fmt.Fprintf(os.Stderr, "ILL FORMED TYPE EXPRESSION\n")
 		os.Exit(1)
 	}
 	arrowNode = ema_typeParse_p()
@@ -256,6 +256,7 @@ func ema_typeParse() *node {
 		return arrowNode
 	}
 }
+
 //*************************************************************************
 
 func ema_typeParse_p() *node {
