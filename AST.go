@@ -102,8 +102,14 @@ func (n *node) toString() string {
 			returnString += n.right.toString()
 		}
 	} else if n.token == ARROW {
-		returnString = n.left.toString() + "→" +
-			n.right.toString()
+		if n.parent != nil {
+			returnString = bracket(n.left.toString() + "→" +
+				n.right.toString())
+		} else {
+			returnString = n.left.toString() + "→" +
+				n.right.toString()
+		}
+
 	}
 	return returnString
 }
