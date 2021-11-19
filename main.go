@@ -163,6 +163,7 @@ func main() {
 	err = getChar() // Read first character
 	checkError(err)
 
+	context = contextStack{nil} //initialize context
 	parse() // Parses once
 
 	_, err = fmt.Fprintf(os.Stdout, rootExpressionNode.toString()+":"+
