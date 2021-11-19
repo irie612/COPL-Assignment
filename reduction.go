@@ -271,7 +271,7 @@ func substituteTree(theNode *node, subNode *node, targetVar string) {
 }
 
 //*************************************************************************
-
+ /*temporarily commenting this. Do we actually need this file in this branch?
 // Copies a branch.
 // Return-value: node that contains a copy of a given branch.
 func getCopySubtree(subtree *node) *node {
@@ -287,5 +287,5 @@ func getCopySubtree(subtree *node) *node {
 		getCopySubtree(subtree.right))
 	return returnNode
 }
-
+*/
 //*************************************************************************

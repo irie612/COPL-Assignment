@@ -6,11 +6,11 @@ type contextStack struct {
 
 //*************************************************************************
 
-func (cs *contextStack) addStatement(varName string, typeNode *node)  {
+func (cs* contextStack) addStatement(varName string, typeNode *node)  {
 	//create a node that will be inserted in the context
 	n := newNode(varName,VARIABLE)
 	//add n on top of the current head, add type on the right of the node
-	n.linkNodes(cs.head,typeNode)
+	n.linkNodes(cs.head,getCopySubtree(typeNode))
 	//change pointer to head
 	cs.head=n
 }
@@ -18,7 +18,7 @@ func (cs *contextStack) addStatement(varName string, typeNode *node)  {
 //*************************************************************************
 
 // check for the presence of a statement
-func (cs contextStack) findStatement(varName string, typeNode *node) bool{
+func (cs* contextStack) findStatement(varName string, typeNode *node) bool{
 	//using indirect as an index, traverse the stack until the end is reached
 	for indirect := cs.head; indirect!=nil; indirect=indirect.left {
 		//if we find a statement with the same variable name we check for the type

@@ -30,7 +30,6 @@ var nextToken int    // the current token
 var charClass int    // classification of the current char
 var rootExpressionNode *node
 var rootTypeNode *node
-var context contextStack
 
 //*************************************************************************
 

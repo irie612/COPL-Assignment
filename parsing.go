@@ -41,7 +41,7 @@ func parse() {
 	}
 
 	/***** REMOVE*****/
-	println(context.findStatement(rootExpressionNode.left.right.value,rootExpressionNode.right))
+	//println(context.findStatement(rootExpressionNode.left.right.value,rootExpressionNode.right))
 	/***** REMOVE*****/
 
 	if nextToken != EOL && nextToken != EOF {
@@ -100,7 +100,7 @@ func lexpr() *node {
 			}
 
 			/***** REMOVE*****/
-			context.addStatement(lambdaNode.value,lambdaNode.right)
+			//context.addStatement(lambdaNode.value,lambdaNode.right)
 			/***** REMOVE*****/
 
 			if nextToken != EOL && nextToken != EOF {

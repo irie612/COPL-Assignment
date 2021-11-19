@@ -53,6 +53,24 @@ func (n *node) linkNodes(child ...*node) {
 
 //*************************************************************************
 
+// Copies a branch.
+// Return-value: node that contains a copy of a given branch.
+func getCopySubtree(subtree *node) *node {
+	//base case
+	if subtree == nil {
+		return nil
+	}
+
+	//Create a new identical node and then link a copy of the left
+	//and the right of the subtree
+	returnNode := newNode(subtree.value, subtree.token)
+	returnNode.linkNodes(getCopySubtree(subtree.left),
+		getCopySubtree(subtree.right))
+	return returnNode
+}
+
+//*************************************************************************
+
 func appTreeCreate(nodes []*node) *node {
 	if len(nodes) == 1 {
 		newNode("", APPLICATION).linkNodes(nodes[0])
