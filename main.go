@@ -164,11 +164,12 @@ func main() {
 	checkError(err)
 
 	context := contextStack{nil} //initialize context
-	parse() // Parses once
-	correctJudgment := typeCheck(context,rootExpressionNode,rootTypeNode)
-	if correctJudgment{
+	parse()                      // Parses once
+	testTypeInference()
+	correctJudgment := typeCheck(context, rootExpressionNode, rootTypeNode)
+	if correctJudgment {
 		println("HAMBEMUS IUDICIUM RECTUM")
-	}else {
+	} else {
 		println("OY GOT A LOICENSE FOR DAT TYPE?")
 	}
 	_, err = fmt.Fprintf(os.Stdout, rootExpressionNode.toString()+":"+

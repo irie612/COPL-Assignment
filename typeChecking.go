@@ -10,7 +10,7 @@ func typeCheck(context contextStack, expressionTree *node, typeTree *node) bool 
 	case LAMBDA:
 		//prerequisites for the application of the rule
 		if typeTree.token == ARROW && compareSubtrees(typeTree.left, expressionTree.right) {
-			//add statement to gamma
+			//add statement to gamma // getCopySubtree maybe redundant
 			context.addStatement(expressionTree.value, getCopySubtree(expressionTree.right))
 			//recursively calls itself to check the rest of the expression
 			return typeCheck(context, expressionTree.left, typeTree.right)

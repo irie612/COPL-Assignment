@@ -6,24 +6,24 @@ type contextStack struct {
 
 //*************************************************************************
 
-func (cs* contextStack) addStatement(varName string, typeNode *node)  {
+func (cs *contextStack) addStatement(varName string, typeNode *node) {
 	//create a node that will be inserted in the context
-	n := newNode(varName,VARIABLE)
+	n := newNode(varName, VARIABLE)
 	//add n on top of the current head, add type on the right of the node
-	n.linkNodes(cs.head,getCopySubtree(typeNode))
+	n.linkNodes(cs.head, getCopySubtree(typeNode))
 	//change pointer to head
-	cs.head=n
+	cs.head = n
 }
 
 //*************************************************************************
 
 // check for the presence of a statement
-func (cs* contextStack) findStatement(varName string, typeNode *node) bool{
+func (cs *contextStack) findStatement(varName string, typeNode *node) bool {
 	//using indirect as an index, traverse the stack until the end is reached
-	for indirect := cs.head; indirect!=nil; indirect=indirect.left {
+	for indirect := cs.head; indirect != nil; indirect = indirect.left {
 		//if we find a statement with the same variable name we check for the type
-		if indirect.value == varName{
-			return compareSubtrees(indirect.right,typeNode)
+		if indirect.value == varName {
+			return compareSubtrees(indirect.right, typeNode)
 		}
 	}
 	return false
@@ -31,15 +31,40 @@ func (cs* contextStack) findStatement(varName string, typeNode *node) bool{
 
 //*************************************************************************
 
-func compareSubtrees(NodeA *node,NodeB *node) bool{
+// Given a variable name, gives back a type corresponding to the one
+//in the first statement in the stack. (Used in type inference)
+
+func (cs *contextStack) getType(varName string) *node {
+	//using indirect as an index, traverse the stack until the end is reached
+	for indirect := cs.head; indirect != nil; indirect = indirect.left {
+		//if we find a statement with the same variable name we return the type
+		if indirect.value == varName {
+			return indirect.right
+		}
+	}
+	return nil
+}
+
+//*************************************************************************
+
+//get an indentical copy of the stack
+func (cs *contextStack) getCopy() contextStack {
+	//crete a contextStack with the same underlying tree as the one is called on
+	//can't use getCopySubtree(cs) it requires a *node type as argument
+	return contextStack{getCopySubtree(cs.head)}
+}
+
+//*************************************************************************
+
+func compareSubtrees(NodeA *node, NodeB *node) bool {
 	//Base case. If here, all the comparisons went well
-	if NodeA == nil && NodeB == nil{
+	if NodeA == nil && NodeB == nil {
 		return true
 	}
 	//recursion
-	if NodeA.token==NodeB.token && NodeA.value==NodeB.value{
-		return compareSubtrees(NodeA.left,NodeB.left) && compareSubtrees(NodeA.right,NodeB.right)
-	} else{
+	if NodeA.token == NodeB.token && NodeA.value == NodeB.value {
+		return compareSubtrees(NodeA.left, NodeB.left) && compareSubtrees(NodeA.right, NodeB.right)
+	} else {
 		return false
 	}
 }
