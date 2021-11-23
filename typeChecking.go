@@ -6,14 +6,13 @@ import (
 )
 //Main function for type checking
 func typeCheck(context contextStack, expressionTree *node, typeTree *node) (bool, *node) {
-	if (typeTree == nil) {
-		fmt.Fprintf(os.Stdout, "whelp fuck")
-		return false, nil
-	}
 	switch expressionTree.token {
 	case VARIABLE:
 		/* Search in context for the 'Variable : Type' */
 		isInContext, statementInContext := context.findStatement(expressionTree.value, typeTree)
+		if (!isInContext) {
+			print("Cannot find variable in context\n")
+		}
 		return isInContext, statementInContext
 
 	case LAMBDA:
