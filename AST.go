@@ -15,6 +15,11 @@
 
 package main
 
+import(
+	"os"
+	"fmt"
+)
+
 //*************************************************************************
 
 // AST Node Struct
@@ -134,4 +139,45 @@ func (n *node) toString() string {
 
 func bracket(s string) string {
 	return "(" + s + ")"
+}
+
+// Prints the tree.
+func printTree(theNode *node) {
+	printPostOrder(theNode)
+	fmt.Println()
+}
+
+//*************************************************************************
+
+// Helper-function for <printTree()>.
+func printPostOrder(theNode *node) {
+	if theNode == nil {
+		return
+	}
+	if theNode.token == LAMBDA {
+		fmt.Fprintf(os.Stdout, "(")
+		fmt.Fprintf(os.Stdout, "λ%s ", theNode.value)
+	} else if theNode.token == VARIABLE {
+		fmt.Fprintf(os.Stdout, "%s", theNode.value)
+	}
+
+	if theNode.left != nil && theNode.right != nil {
+		fmt.Fprintf(os.Stdout, "(")
+	}
+	printPostOrder(theNode.left)
+
+	if (theNode.left != nil && theNode.right != nil) &&
+		(theNode.left.token == VARIABLE && theNode.right.token == VARIABLE) && theNode.token != ARROW {
+		fmt.Fprintf(os.Stdout, " ")
+	} 
+
+	if theNode.token == ARROW {
+		fmt.Fprintf(os.Stdout, "->")
+	}
+
+	printPostOrder(theNode.right)
+	if theNode.token == LAMBDA || 
+	(theNode.left != nil && theNode.right != nil) {
+		fmt.Fprintf(os.Stdout, ")")
+	}
 }

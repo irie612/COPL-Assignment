@@ -18,22 +18,25 @@ func (cs *contextStack) addStatement(varName string, typeNode *node) {
 //*************************************************************************
 
 // check for the presence of a statement
-func (cs *contextStack) findStatement(varName string, typeNode *node) bool {
+func (cs *contextStack) findStatement(varName string, typeNode *node) (bool, *node) {
 	//using indirect as an index, traverse the stack until the end is reached
 	for indirect := cs.head; indirect != nil; indirect = indirect.left {
 		//if we find a statement with the same variable name we check for the type
 		if indirect.value == varName {
-			return compareSubtrees(indirect.right, typeNode)
+			if compareSubtrees(indirect.right, typeNode) {
+				return true, indirect.right
+			}
+			return false, nil
 		}
 	}
-	return false
+
+	return false, nil
 }
 
 //*************************************************************************
 
 // Given a variable name, gives back a type corresponding to the one
 //in the first statement in the stack. (Used in type inference)
-
 func (cs *contextStack) getType(varName string) *node {
 	//using indirect as an index, traverse the stack until the end is reached
 	for indirect := cs.head; indirect != nil; indirect = indirect.left {
@@ -42,6 +45,7 @@ func (cs *contextStack) getType(varName string) *node {
 			return indirect.right
 		}
 	}
+
 	return nil
 }
 
@@ -57,14 +61,15 @@ func (cs *contextStack) getCopy() contextStack {
 //*************************************************************************
 
 func compareSubtrees(NodeA *node, NodeB *node) bool {
-	//Base case. If here, all the comparisons went well
+	//Base case. If here, then all the comparisons went well
 	if NodeA == nil && NodeB == nil {
 		return true
 	}
 	//recursion
-	if NodeA.token == NodeB.token && NodeA.value == NodeB.value {
+	if NodeA.token == NodeB.token && (NodeA.value == NodeB.value || 
+		NodeA.value == "?" || NodeB.value == "?") && !(NodeA.value == "?" && NodeB.value == "?") {
 		return compareSubtrees(NodeA.left, NodeB.left) && compareSubtrees(NodeA.right, NodeB.right)
-	} else {
-		return false
-	}
+	} 
+
+	return false
 }

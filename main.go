@@ -165,15 +165,13 @@ func main() {
 
 	context := contextStack{nil} //initialize context
 	parse()                      // Parses once
-	testTypeInference()
-	correctJudgment := typeCheck(context, rootExpressionNode, rootTypeNode)
-	if correctJudgment {
-		println("HAMBEMUS IUDICIUM RECTUM")
+	theJudgment, _ := typeCheck(context, rootExpressionNode, rootTypeNode)
+	if theJudgment {
+		println("Correct Judgement")
 	} else {
-		println("OY GOT A LOICENSE FOR DAT TYPE?")
+		println("Cannot Typecheck")
 	}
-	_, err = fmt.Fprintf(os.Stdout, rootExpressionNode.toString()+":"+
-		rootTypeNode.toString())
+	printTree(rootTypeNode)
 	println()
 	checkError(err)
 
