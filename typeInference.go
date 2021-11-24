@@ -19,7 +19,9 @@ func typeInference(context contextStack, expressionTree *node) *node {
 		} else {
 			//create the predicted type
 			top := newNode("", ARROW)
-			left := newNode(expressionTree.value, VARIABLE)
+			//TODO: FIX THIS
+			left := newNode(expressionTree.value, VARIABLE) //possibly wrong - creating a copy without references to children
+			//make a copy of the expressionTree.right (which is its type) and then link it to top
 			top.linkNodes(left, right)
 			return top
 		}
