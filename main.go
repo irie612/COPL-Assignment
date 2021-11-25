@@ -167,12 +167,12 @@ func main() {
 	parse()                      // Parses once
 	theJudgment := typeCheck(context, rootExpressionNode, rootTypeNode)
 	if theJudgment {
-		println("Correct Judgement")
+		fmt.Fprintf(os.Stdout, rootExpressionNode.toString()+":"+
+			rootTypeNode.toString())
 	} else {
-		println("Cannot Typecheck")
+		fmt.Fprintf(os.Stdout, rootExpressionNode.toString()+
+			" : "+"Cannot type check")
 	}
-	printTree(rootTypeNode)
-	println()
 	checkError(err)
 
 	os.Exit(0) //exits the program with status 0 when everything is
