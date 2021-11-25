@@ -4,20 +4,22 @@ import (
 	"fmt"
 	"os"
 )
+
 //Main function for type checking
 func typeCheck(context contextStack, expressionTree *node, typeTree *node) (bool, *node) {
+
 	switch expressionTree.token {
 	case VARIABLE:
 		/* Search in context for the 'Variable : Type' */
 		isInContext, statementInContext := context.findStatement(expressionTree.value, typeTree)
-		if (!isInContext) {
+		if !isInContext {
 			print("Cannot find variable in context\n")
 		}
 		return isInContext, statementInContext
 
 	case LAMBDA:
 		/* Prerequisite: Check T of the lambda-expression, and T of the T->T' */
-		if typeTree.token == ARROW && compareSubtrees(expressionTree.right, typeTree.left)  {
+		if typeTree.token == ARROW && compareSubtrees(expressionTree.right, typeTree.left) {
 			/* Add statement (with the correct T) to the context */
 			context.addStatement(expressionTree.value, expressionTree.right)
 
@@ -39,9 +41,9 @@ func typeCheck(context contextStack, expressionTree *node, typeTree *node) (bool
 		fmt.Fprintf(os.Stdout, "E1Expression: %s\n", E1Expression.toString())
 		E2Expression := expressionTree.right
 		fmt.Fprintf(os.Stdout, "E2Expression: %s\n", E2Expression.toString())
-		E2TypeTree := newNode("?" , VARIABLE)	// T, may contain questionmarks
+		E2TypeTree := newNode("?", VARIABLE) // T, may contain questionmarks
 		n := newNode("?", VARIABLE)
-		E1TypeTree := newNode("", ARROW)	// T->T' may contains questionmarks
+		E1TypeTree := newNode("", ARROW) // T->T' may contains questionmarks
 		E1TypeTree.linkNodes(n, typeTree)
 		fmt.Fprintf(os.Stdout, "E1TypeTree: %s\n", E1TypeTree.toString())
 
@@ -50,18 +52,18 @@ func typeCheck(context contextStack, expressionTree *node, typeTree *node) (bool
 		fmt.Fprintf(os.Stdout, "E1Statement: %s\n", E1Statement.toString())
 
 		/* Typecheck error found in further calls */
-		if (!E1Bool) {
+		if !E1Bool {
 			print("E1Bool is false\n")
 			return false, nil
 		}
-		
+
 		/* E1TypeTreeNew = The actual T->T' statement, where the questionmarks has been determined */
 		E1TypeTreeNew := getQuestionNode(E1TypeTree, E1Statement) // To compare with old typeTree
 		fmt.Fprintf(os.Stdout, "E1TypeTreeNew: %s\n", E1TypeTreeNew.toString())
-		if (!compareSubtrees(E1TypeTree, E1TypeTreeNew)) {
+		if !compareSubtrees(E1TypeTree, E1TypeTreeNew) {
 			print("whelp something went wrong again")
 		}
-		
+
 		/* E2TypeTree = T of E1 (T -> T') */
 		E2TypeTree = E1TypeTreeNew.left
 		fmt.Fprintf(os.Stdout, "E2TypeTree: %s\n", E2TypeTree.toString())
@@ -70,7 +72,7 @@ func typeCheck(context contextStack, expressionTree *node, typeTree *node) (bool
 		E2Bool, _ := typeCheck(context, E2Expression, E2TypeTree)
 
 		/* Apparently a typecheck error in the further calls from E2 */
-		if (!E2Bool) {
+		if !E2Bool {
 			return false, nil
 		}
 
@@ -85,7 +87,7 @@ func typeCheck(context contextStack, expressionTree *node, typeTree *node) (bool
 func getQuestionNode(checkTree *node, answerTree *node) *node {
 	checkTreeNrNodes := countNodes(checkTree)
 	answerTreeNrNodes := countNodes(answerTree)
-	if (answerTreeNrNodes < checkTreeNrNodes) {
+	if answerTreeNrNodes < checkTreeNrNodes {
 		print("Whelp something went wrong")
 		return nil
 	}

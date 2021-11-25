@@ -20,7 +20,7 @@ func typeInference(context contextStack, expressionTree *node) *node {
 			//create the predicted type
 			top := newNode("", ARROW)
 			//TODO: FIX THIS
-			left := newNode(expressionTree.value, VARIABLE) //possibly wrong - creating a copy without references to children
+			left := getCopySubtree(expressionTree.right) //possibly wrong - creating a copy without references to children
 			//make a copy of the expressionTree.right (which is its type) and then link it to top
 			top.linkNodes(left, right)
 			return top
@@ -31,6 +31,9 @@ func typeInference(context contextStack, expressionTree *node) *node {
 		rightType := typeInference(context.getCopy(), expressionTree.right)
 		//if the conditions are right, return the right of the arrow type
 		// (T in the rule)
+		if leftType == nil || rightType == nil {
+			return nil
+		}
 		if leftType.token == ARROW &&
 			compareSubtrees(leftType.left, rightType) {
 			return leftType.right
@@ -45,18 +48,20 @@ func typeInference(context contextStack, expressionTree *node) *node {
 func testTypeInference() {
 
 	cs := contextStack{nil}
-	{
-		//block specific to the expression "a b"
-		//created a context to make a valid prediction
+	/*
+		{
+			//block specific to the expression "a b"
+			//created a context to make a valid prediction
 
-		// a : A->B
-		boh := newNode("->", ARROW)
-		boh.linkNodes(newNode("A", VARIABLE), newNode("B", VARIABLE))
-		cs.addStatement("a", boh)
+			// a : A->B
+			boh := newNode("->", ARROW)
+			boh.linkNodes(newNode("A", VARIABLE), newNode("B", VARIABLE))
+			cs.addStatement("a", boh)
 
-		// b : a
-		cs.addStatement("b", boh.left)
-	}
+			// b : a
+			cs.addStatement("b", boh.left)
+		}
+	*/
 	t := typeInference(cs, rootExpressionNode)
 	println("EXPRESSION: ", rootExpressionNode.toString())
 	println("TYPE PREDICTED: ", t.toString())

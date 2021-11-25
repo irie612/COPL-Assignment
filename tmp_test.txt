@@ -1,1 +1,1 @@
-\x^(B->A->B) (x(\z^A zx)) : (B->A->B)->(A->A)
+\b ^ B \a ^ B->A (a b) :B
