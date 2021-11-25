@@ -169,16 +169,14 @@ func main() {
 		err = typeCheck(context, rootExpressionNode, rootTypeNode)
 		if err == nil {
 			fmt.Fprintf(os.Stdout, rootExpressionNode.toString()+":"+
-				rootTypeNode.toString())
+				rootTypeNode.toString()+"\n")
 		} else {
 			fmt.Fprintf(os.Stdout, rootExpressionNode.toString()+
 				" : ")
 			checkError(err)
 			os.Exit(1)
 		}
-		println()
 	}
-
 	os.Exit(0) //exits the program with status 0 when everything is
 	//parsed correctly.
 }
