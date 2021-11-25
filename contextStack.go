@@ -23,7 +23,7 @@ func (cs *contextStack) findStatement(varName string, typeNode *node) (bool, *no
 	for indirect := cs.head; indirect != nil; indirect = indirect.left {
 		//if we find a statement with the same variable name we check for the type
 		if indirect.value == varName {
-			if compareSubtrees(indirect.right, typeNode) {
+			if indirect.right.compareSubtrees(typeNode) {
 				return true, indirect.right
 			}
 			return false, nil
@@ -59,17 +59,3 @@ func (cs *contextStack) getCopy() contextStack {
 }
 
 //*************************************************************************
-
-func compareSubtrees(NodeA *node, NodeB *node) bool {
-	//Base case. If here, then all the comparisons went well
-	if NodeA == nil && NodeB == nil {
-		return true
-	}
-	//recursion
-	if NodeA.token == NodeB.token && (NodeA.value == NodeB.value || 
-		NodeA.value == "?" || NodeB.value == "?") && !(NodeA.value == "?" && NodeB.value == "?") {
-		return compareSubtrees(NodeA.left, NodeB.left) && compareSubtrees(NodeA.right, NodeB.right)
-	} 
-
-	return false
-}

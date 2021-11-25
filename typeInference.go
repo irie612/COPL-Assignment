@@ -35,7 +35,7 @@ func typeInference(context contextStack, expressionTree *node) *node {
 			return nil
 		}
 		if leftType.token == ARROW &&
-			compareSubtrees(leftType.left, rightType) {
+			leftType.left.compareSubtrees(rightType) {
 			return leftType.right
 		}
 	}

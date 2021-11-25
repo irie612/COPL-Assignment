@@ -165,8 +165,7 @@ func main() {
 
 	context := contextStack{nil} //initialize context
 	parse()                      // Parses once
-	testTypeInference()
-	theJudgment, _ := typeCheck(context, rootExpressionNode, rootTypeNode)
+	theJudgment := typeCheck(context, rootExpressionNode, rootTypeNode)
 	if theJudgment {
 		println("Correct Judgement")
 	} else {
