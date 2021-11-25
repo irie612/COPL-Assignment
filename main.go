@@ -165,15 +165,17 @@ func main() {
 
 	context := contextStack{nil} //initialize context
 	parse()                      // Parses once
-	theJudgment := typeCheck(context, rootExpressionNode, rootTypeNode)
-	if theJudgment {
+	checkError(err)
+
+	err = typeCheck(context, rootExpressionNode, rootTypeNode)
+	if err == nil {
 		fmt.Fprintf(os.Stdout, rootExpressionNode.toString()+":"+
 			rootTypeNode.toString())
 	} else {
 		fmt.Fprintf(os.Stdout, rootExpressionNode.toString()+
-			" : "+"Cannot type check")
+			" : ")
+		checkError(err)
 	}
-	checkError(err)
 
 	os.Exit(0) //exits the program with status 0 when everything is
 	//parsed correctly.
