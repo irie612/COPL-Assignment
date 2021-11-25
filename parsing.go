@@ -32,7 +32,6 @@ func parse() {
 	}
 	rootExpressionNode = expr()
 
-
 	if nextToken != COLON {
 		_, _ = fmt.Fprintf(os.Stderr, "MISSING TYPE\n")
 	} else {
@@ -99,11 +98,11 @@ func lexpr() *node {
 				lambdaNode.right = typeParse() //right == type of the lambda expression
 			}
 
-			/***** REMOVE*****/
-			//context.addStatement(lambdaNode.value,lambdaNode.right)
-			/***** REMOVE*****/
-
-			if nextToken != EOL && nextToken != EOF {
+			if nextToken == DOT {
+				lex()
+				lambdaNode.linkNodes(expr())
+				return lambdaNode
+			} else if nextToken != EOL && nextToken != EOF {
 				lambdaNode.linkNodes(lexpr())
 				return lambdaNode
 			} else {
@@ -183,6 +182,7 @@ func typeParse() *node {
 		return arrowNode
 	}
 }
+
 //*************************************************************************
 
 func typeParse_p() *node {
