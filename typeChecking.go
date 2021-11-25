@@ -4,6 +4,8 @@ import (
 	"fmt"
 )
 
+//*************************************************************************
+
 func typeCheck(context contextStack, expressionTree *node, typeTree *node) error {
 	inferredType, err := typeInference(context, expressionTree)
 	if inferredType == nil {
@@ -16,6 +18,8 @@ func typeCheck(context contextStack, expressionTree *node, typeTree *node) error
 		}
 	}
 }
+
+//*************************************************************************
 
 func typeInference(context contextStack, expressionTree *node) (*node, error) {
 	switch expressionTree.token {
