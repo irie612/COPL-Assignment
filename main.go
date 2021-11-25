@@ -162,21 +162,22 @@ func main() {
 
 	err = getChar() // Read first character
 	checkError(err)
+
 	for nextToken != EOF {
 		context := contextStack{nil} //initialize context
 		parse()                      // Parses once
-		theJudgment := typeCheck(context, rootExpressionNode, rootTypeNode)
-		if theJudgment {
+		err = typeCheck(context, rootExpressionNode, rootTypeNode)
+		if err == nil {
 			fmt.Fprintf(os.Stdout, rootExpressionNode.toString()+":"+
 				rootTypeNode.toString())
 		} else {
-			fmt.Fprintf(os.Stderr, rootExpressionNode.toString()+
-				" : "+"Cannot type check")
+			fmt.Fprintf(os.Stdout, rootExpressionNode.toString()+
+				" : ")
+			checkError(err)
 			os.Exit(1)
 		}
 		println()
 	}
-	checkError(err)
 
 	os.Exit(0) //exits the program with status 0 when everything is
 	//parsed correctly.
