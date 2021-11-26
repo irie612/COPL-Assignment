@@ -2,7 +2,7 @@
 // Programming Language: GoLang
 //
 // Course: Concepts of Programming Language
-// Assignment 3: Type checker
+// Assignment 3: Type Checking
 // Class 2, Group 11
 // Author(s) :	Emanuele Greco (s3375951),
 //				Irie Railton (s3292037),
@@ -15,18 +15,13 @@
 
 package main
 
-import (
-	"fmt"
-	"os"
-)
-
 //*************************************************************************
 
 // AST Node Struct
 type node struct {
 	parent *node
 	left   *node
-	right  *node //used to store the type of the node for Lambda abstraction nodes and for variables in contextStack
+	right  *node //used to store the type of the node for Lambda abstraction
 	value  string
 	token  int //type of node
 }
@@ -83,7 +78,8 @@ func appTreeCreate(nodes []*node) *node {
 		newNode("", APPLICATION).linkNodes(nodes[0], nodes[1])
 	}
 	if len(nodes) > 2 {
-		return appTreeCreate(append([]*node{nodes[0].parent}, nodes[2:]...))
+		return appTreeCreate(append([]*node{nodes[0].parent},
+			nodes[2:]...))
 	}
 	return nodes[0].parent
 }
@@ -137,14 +133,10 @@ func (n *node) toString() string {
 	return returnString
 }
 
+//*************************************************************************
+
 func bracket(s string) string {
 	return "(" + s + ")"
-}
-
-// Prints the tree.
-func printTree(theNode *node) {
-	printPostOrder(theNode)
-	fmt.Println()
 }
 
 //*************************************************************************
@@ -155,44 +147,14 @@ func (n *node) compareSubtrees(other *node) bool {
 		return true
 	}
 	//recursion
-	if n.token == other.token && (n.value == other.value ||
-		n.value == "?" || other.value == "?") && !(n.value == "?" && other.value == "?") {
-		return n.left.compareSubtrees(other.left) && n.right.compareSubtrees(other.right)
+	if n.token == other.token &&
+		(n.value == other.value || n.value == "?" || other.value == "?") &&
+		!(n.value == "?" && other.value == "?") {
+
+		return n.left.compareSubtrees(other.left) &&
+			n.right.compareSubtrees(other.right)
 	}
 	return false
 }
 
 //*************************************************************************
-
-// Helper-function for <printTree()>.
-func printPostOrder(theNode *node) {
-	if theNode == nil {
-		return
-	}
-	if theNode.token == LAMBDA {
-		fmt.Fprintf(os.Stdout, "(")
-		fmt.Fprintf(os.Stdout, "λ%s ", theNode.value)
-	} else if theNode.token == VARIABLE {
-		fmt.Fprintf(os.Stdout, "%s", theNode.value)
-	}
-
-	if theNode.left != nil && theNode.right != nil {
-		fmt.Fprintf(os.Stdout, "(")
-	}
-	printPostOrder(theNode.left)
-
-	if (theNode.left != nil && theNode.right != nil) &&
-		(theNode.left.token == VARIABLE && theNode.right.token == VARIABLE) && theNode.token != ARROW {
-		fmt.Fprintf(os.Stdout, " ")
-	}
-
-	if theNode.token == ARROW {
-		fmt.Fprintf(os.Stdout, "->")
-	}
-
-	printPostOrder(theNode.right)
-	if theNode.token == LAMBDA ||
-		(theNode.left != nil && theNode.right != nil) {
-		fmt.Fprintf(os.Stdout, ")")
-	}
-}

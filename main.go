@@ -2,13 +2,13 @@
 // Programming Language: GoLang
 //
 // Course: Concepts of Programming Language
-// Assignment 3: Type checker
+// Assignment 3: Type Checking
 // Class 2, Group 11
 // Author(s) :	Emanuele Greco (s3375951),
 //				Irie Railton (s3292037),
 //				Kah ming Wong (s2641976).
 //
-// Date: 13th November, 2021.
+// Date: 25th November, 2021.
 //
 
 //*************************************************************************
@@ -56,7 +56,7 @@ func addChar() {
 		lexLen++
 		lexeme[lexLen] = 0
 	} else {
-		_, _ = fmt.Fprintf(os.Stderr, "Error - lexeme is too long \n")
+		fmt.Fprintf(os.Stderr, "Error - lexeme is too long \n")
 		os.Exit(1)
 	}
 }
@@ -91,7 +91,7 @@ func lex() {
 	getNonBlank()
 
 	switch charClass {
-	case LETTER: //if the lexeme starts with a letter nextToken is a variable
+	case LETTER: //if lexeme starts with a letter nextToken is a variable
 		addChar()
 		_ = getChar()
 		for charClass == LETTER || charClass == DIGIT {
@@ -100,7 +100,7 @@ func lex() {
 		}
 		nextToken = VARIABLE
 	case DIGIT: //if the lexeme starts with a digit there's an error
-		_, _ = fmt.Fprintf(os.Stderr, "Variable starts with digit \n")
+		fmt.Fprintf(os.Stderr, "Variable starts with digit \n")
 		os.Exit(1)
 	case UNKNOWN: //any other case
 		lookup(nextChar)
@@ -164,12 +164,11 @@ func main() {
 	checkError(err)
 
 	for nextToken != EOF {
-		context := contextStack{nil} //initialize context
-		parse()                      // Parses once
-		err = typeCheck(context, rootExpressionNode, rootTypeNode)
+		parse() // Parses once
+		err = typeCheck(rootExpressionNode, rootTypeNode)
 		if err == nil {
-			fmt.Fprintf(os.Stdout, rootExpressionNode.toString()+":"+
-				rootTypeNode.toString()+"\n")
+			fmt.Fprintf(os.Stdout, rootExpressionNode.toString()+
+				":"+rootTypeNode.toString()+"\n")
 		} else {
 			fmt.Fprintf(os.Stdout, rootExpressionNode.toString()+
 				" : ")

@@ -2,7 +2,7 @@
 // Programming Language: GoLang
 //
 // Course: Concepts of Programming Language
-// Assignment 3: Type checker
+// Assignment 3: Type Checking
 // Class 2, Group 11
 // Author(s) :	Emanuele Greco (s3375951),
 //				Irie Railton (s3292037),
@@ -38,13 +38,8 @@ func parse() {
 		lex()
 		rootTypeNode = typeParse()
 	}
-
-	/***** REMOVE*****/
-	//println(context.findStatement(rootExpressionNode.left.right.value,rootExpressionNode.right))
-	/***** REMOVE*****/
-
 	if nextToken != EOL && nextToken != EOF {
-		_, _ = fmt.Fprintf(os.Stderr, "INPUT STRING NOT FULLY PARSED\n")
+		fmt.Fprintf(os.Stderr, "INPUT STRING NOT FULLY PARSED\n")
 		os.Exit(1)
 	}
 }
@@ -72,7 +67,9 @@ func expr() *node {
 
 // Finds valid expr_p expressions. May be "empty"
 func expr_p() []*node {
-	if !(nextToken == EOF || nextToken == EOL || nextToken == RIGHT_P || nextToken == COLON) {
+	if !(nextToken == EOF || nextToken == EOL ||
+		nextToken == RIGHT_P || nextToken == COLON) {
+
 		lexprNode := lexpr()
 		exprPNodes := expr_p()
 		exprPNodes = append([]*node{lexprNode}, exprPNodes...)
@@ -95,23 +92,26 @@ func lexpr() *node {
 			//get the type of the lambda abstraction
 			if nextToken == TYPE_ASS {
 				lex()
-				lambdaNode.right = typeParse() //right == type of the lambda expression
+				//right == type of the lambda expression
+				lambdaNode.right = typeParse()
 			}
-
+			//DOT case
 			if nextToken == DOT {
 				lex()
 				lambdaNode.linkNodes(expr())
 				return lambdaNode
+				//Lambda, variable, or bracket case
 			} else if nextToken != EOL && nextToken != EOF {
 				lambdaNode.linkNodes(lexpr())
 				return lambdaNode
 			} else {
-				_, _ = fmt.Fprintf(os.Stderr,
+				fmt.Fprintf(os.Stderr,
 					"MISSING EXPRESSION AFTER LAMBDA ABSTRACTION\n")
 				os.Exit(1)
 			}
 		} else { // nextToken != VARIABLE ERROR
-			_, _ = fmt.Fprintf(os.Stderr, "NO VALID VARIABLE AFTER LAMBDA TOKEN\n")
+			fmt.Fprintf(os.Stderr,
+				"NO VALID VARIABLE AFTER LAMBDA TOKEN\n")
 			os.Exit(1)
 		}
 		return nil
@@ -127,24 +127,25 @@ func pexpr() *node {
 	if nextToken == LEFT_P {
 		lex()
 		if nextToken == RIGHT_P {
-			_, _ = fmt.Fprintf(os.Stderr,
+			fmt.Fprintf(os.Stderr,
 				"MISSING EXPRESSION AFTER OPENING PARENTHESIS\n")
 			os.Exit(1)
 		}
 		exprNode := expr()
 		if nextToken != RIGHT_P {
-			_, _ = fmt.Fprintf(os.Stderr, "MISSING CLOSING PARENTHESIS\n")
+			fmt.Fprintf(os.Stderr, "MISSING CLOSING PARENTHESIS\n")
 			os.Exit(1)
 		} else {
 			lex()
 		}
 		return exprNode
-	} else if nextToken == VARIABLE && !unicode.IsUpper(lexeme[0]) { //var case
+	} else if nextToken == VARIABLE && !unicode.IsUpper(lexeme[0]) {
+		//var case
 		varNode := newNode(string(lexeme[:lexLen]), VARIABLE)
 		lex()
 		return varNode
 	} else {
-		_, _ = fmt.Fprintf(os.Stderr, "INVALID VARIABLE NAME\n")
+		fmt.Fprintf(os.Stderr, "INVALID VARIABLE NAME\n")
 		os.Exit(1)
 		return nil
 	}
@@ -152,7 +153,7 @@ func pexpr() *node {
 
 //*************************************************************************
 /********************************************************
-*		 Grammar for ema_type parsing		    		*
+*		 Grammar for type parsing		    			*
 *	<type> 	::= <uvar> <type'> | '(' <type> )' <type'> 	*
 *	<type'> ::= '->' <type> | ε   	   			   	   	*
 ********************************************************/
@@ -164,14 +165,14 @@ func typeParse() *node {
 		lex()
 		leftNode = typeParse()
 		if nextToken != RIGHT_P {
-			_, _ = fmt.Fprintf(os.Stdout, "MISSING RIGHT PARENTHESIS\n")
+			fmt.Fprintf(os.Stdout, "MISSING RIGHT PARENTHESIS\n")
 		}
 		lex()
 	} else if nextToken == VARIABLE && unicode.IsUpper(lexeme[0]) {
 		leftNode = newNode(string(lexeme[:lexLen]), VARIABLE)
 		lex()
 	} else {
-		_, _ = fmt.Fprintf(os.Stderr, "ILL FORMED TYPE EXPRESSION\n")
+		fmt.Fprintf(os.Stderr, "ILL FORMED TYPE EXPRESSION\n")
 		os.Exit(1)
 	}
 	arrowNode = typeParse_p()
@@ -195,3 +196,5 @@ func typeParse_p() *node {
 		return nil
 	}
 }
+
+//*************************************************************************

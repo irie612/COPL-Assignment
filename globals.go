@@ -2,7 +2,7 @@
 // Programming Language: GoLang
 //
 // Course: Concepts of Programming Language
-// Assignment 3: Type checker
+// Assignment 3: Type Checking
 // Class 2, Group 11
 // Author(s) :	Emanuele Greco (s3375951),
 //				Irie Railton (s3292037),
