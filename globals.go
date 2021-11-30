@@ -8,7 +8,7 @@
 //				Irie Railton (s3292037),
 //				Kah ming Wong (s2641976).
 //
-// Date: 13th November, 2021.
+// Date: 30th November, 2021.
 //
 
 //*************************************************************************
@@ -42,7 +42,7 @@ const (
 	DOT
 	APPLICATION
 	COLON
-	TYPE_ASS
+	TYPE_ASS	// the '^' i.e.: \<lvar> '^' <type>
 	ARROW
 	EOF = -2 // end of file
 	EOL = -1 // end of line

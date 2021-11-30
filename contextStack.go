@@ -8,7 +8,7 @@
 //				Irie Railton (s3292037),
 //				Kah ming Wong (s2641976).
 //
-// Date: 15th November, 2021.
+// Date: 30th November, 2021.
 //
 
 //*************************************************************************
@@ -51,7 +51,7 @@ func (cs *contextStack) findStatement(value string, n *node) (bool, *node) {
 //*************************************************************************
 
 // Given a variable name, gives back a type corresponding to the one
-//in the first statement in the stack. (Used in type inference)
+// in the first statement in the stack. (Used in type inference)
 func (cs *contextStack) getType(varName string) *node {
 	//using indirect as an index, traverse the stack
 	for indirect := cs.head; indirect != nil; indirect = indirect.left {
@@ -66,7 +66,7 @@ func (cs *contextStack) getType(varName string) *node {
 
 //*************************************************************************
 
-//get an identical copy of the stack
+// get an identical copy of the stack
 func (cs *contextStack) getCopy() contextStack {
 	//can't use getCopySubtree(cs) it requires a *node type as argument
 	return contextStack{getCopySubtree(cs.head)}

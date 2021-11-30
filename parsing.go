@@ -8,7 +8,7 @@
 //				Irie Railton (s3292037),
 //				Kah ming Wong (s2641976).
 //
-// Date: 13th November, 2021.
+// Date: 30th November, 2021.
 //
 //*************************************************************************
 
@@ -45,13 +45,12 @@ func parse() {
 }
 
 //*************************************************************************
-/************************************************
-*		 Grammar for expression parsing			*
-*	<expr> 	::= <lexpr> <expr'>					*
-*	<expr'> ::= <lexpr> <expr'> | ε   	   		*
-*	<lexpr>	::= <pexpr> | λ<var>^<type><expr>	*
-*	<pexpr>	::= <var> | '('<expr>')'	   		*
-************************************************/
+// Grammar for expression parsing
+// <expr> ::= <lexpr> <expr'>
+// <expr'> ::= <lexpr> <expr'> | ε
+// <lexpr> ::= <pexpr> | λ<var>^<type><expr>
+// <pexpr> ::= <var> | '('<expr>')'
+//*************************************************************************
 
 func expr() *node {
 	lexprNode := lexpr()
@@ -65,7 +64,7 @@ func expr() *node {
 
 //*************************************************************************
 
-// Finds valid expr_p expressions. May be "empty"
+// Finds valid expr_p expressions. May be "empty".
 func expr_p() []*node {
 	if !(nextToken == EOF || nextToken == EOL ||
 		nextToken == RIGHT_P || nextToken == COLON) {
@@ -152,11 +151,10 @@ func pexpr() *node {
 }
 
 //*************************************************************************
-/********************************************************
-*		 Grammar for type parsing		    			*
-*	<type> 	::= <uvar> <type'> | '(' <type> )' <type'> 	*
-*	<type'> ::= '->' <type> | ε   	   			   	   	*
-********************************************************/
+// Grammar for type parsing
+// <type> ::= <uvar> <type'> | '(' <type> )' <type'>
+// <type'> ::= '->' <type> | ε
+//*************************************************************************
 
 func typeParse() *node {
 	var leftNode *node

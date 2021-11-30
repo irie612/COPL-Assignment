@@ -8,7 +8,7 @@
 //				Irie Railton (s3292037),
 //				Kah ming Wong (s2641976).
 //
-// Date: 25th November, 2021.
+// Date: 30th November, 2021.
 //
 
 //*************************************************************************
@@ -67,7 +67,7 @@ func addChar() {
 // quit the program with the return value 1.
 func checkError(err error) {
 	if err != nil {
-		_, _ = fmt.Fprintf(os.Stderr, "%s\n", err)
+		fmt.Fprintf(os.Stderr, "%s\n", err)
 		os.Exit(1)
 	}
 }
@@ -93,7 +93,7 @@ func lex() {
 	switch charClass {
 	case LETTER: //if lexeme starts with a letter nextToken is a variable
 		addChar()
-		_ = getChar()
+		getChar()
 		for charClass == LETTER || charClass == DIGIT {
 			addChar()
 			checkError(getChar())
@@ -104,7 +104,7 @@ func lex() {
 		os.Exit(1)
 	case UNKNOWN: //any other case
 		lookup(nextChar)
-		_ = getChar()
+		getChar()
 	}
 }
 
@@ -152,7 +152,7 @@ func clearLexeme() {
 // Main driver of the parsing.
 func main() {
 	if len(os.Args) < 2 {
-		_, _ = fmt.Fprintf(os.Stderr, "No arguments given. \n")
+		fmt.Fprintf(os.Stderr, "No arguments given. \n")
 		os.Exit(1)
 	} // Check whether an argument (text file) is given
 
