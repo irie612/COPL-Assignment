@@ -64,7 +64,7 @@ func main() {
 	checkError(err)
 
 	for nextToken != EOF {
-		parse() // Parses once
+		parse()
 		err = typeCheck(rootExpressionNode, rootTypeNode)
 		if err == nil {
 			fmt.Fprintf(os.Stdout, rootExpressionNode.toString()+
@@ -76,6 +76,7 @@ func main() {
 			os.Exit(1)
 		}
 	}
+	
 	os.Exit(0) //exits the program with status 0 when everything is
 	//parsed correctly.
 }
