@@ -47,3 +47,12 @@ Assignment 2 builds onto our previous iteration of lexer and parser. That is, wi
 2. Is alpha-conversion required? If so, apply alpha-conversion and then beta-reduction, if not, immediately apply beta-reduction. Return true.
 3. Move down the tree, starting with the left child. And check whether the current node is a valid node for beta-reduction (step 1). We keep moving down the tree through the left nodes until we hit a NULL (or there was a valid beta-reduction). If we hit a NULL `betaReudction()` will return a false (to the previous recursive calls). And move to step 4. If the call of `betaReduction()` with the left child resulted into a true, then return true. Otherwise, also move to step 4.
 4. If the branch under the left child of the "current node" has no valid beta-reduction, then go down the tree through the right child of "current node". And go back to step 1. At this point, the "current node" will return the value of the `betaReduction()` call of the right child.
+
+
+______________________________________________________________________________________________________________________________________________
+## Assignment 3
+
+Assigment 3 is the last addition to our existing program, which involves 'type checking'. For this, we slightly modified our existing parser, and furthermore, created new functions to parse types with. The end result of one call of parse should give us a valid `rootExpressionNode` containing within the expression as a tree, and a valid `rootTypeNode` containing within the type of `rootExpressionNode` as a tree. If either of these nodes are invalid, resulting from invalid input or grammar, then the program will terminate with exit status 1. 
+
+
+...
