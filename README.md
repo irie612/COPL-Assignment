@@ -1,4 +1,4 @@
-bYEAR: 2021-2022
+YEAR: 2021-2022
 
 COURSE: CONCEPTS OF PROGRAMMING LANGUAGES (ASSIGNMENT 3)
 
@@ -10,11 +10,12 @@ AUTHOR(S): Emanuele Greco (s3375951), Irie Railton (s3292037), & Kah Ming wong (
 
 GoLang Compiler Version: go 1.13
 
-Operating System (Kah Ming): Ubuntu 20.04.3 LTS
-
 Operating System (Emanuele): Ubuntu 20.04
 
 Operating System (Irie): Ubuntu 20.04.1 LTS
+
+Operating System (Kah Ming): Ubuntu 20.04.3 LTS
+
 
 
 The program works correctly on most parts. Aspects that may be called deficiencies are:
