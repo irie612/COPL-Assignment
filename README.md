@@ -18,7 +18,8 @@ Operating System (Irie): Ubuntu 20.04.1 LTS
 
 
 The program works correctly on most parts. Aspects that may be called deficiencies are:
-- The program is not able to correctly parse an expression with dots as part of the lambda abstractions
+- ~~The program is not able to correctly parse an expression with dots as part of the lambda abstractions~~
+    The program is now able to correctly parse an expression with dots.
 
 ______________________________________________________________________________________________________________________________________________
 ## Assignment 1
