@@ -93,6 +93,10 @@ func lexpr() *node {
 				lex()
 				//right == type of the lambda expression
 				lambdaNode.right = typeParse()
+			} else {
+				fmt.Fprintf(os.Stderr, 
+					"MISSING TYPE AFTER LAMBDA ABSTRACTION \n")
+				os.Exit(1)
 			}
 			//DOT case
 			if nextToken == DOT {

@@ -1,5 +1,0 @@
-These are examples that don't work properly.
-Let's keep it an archive for temporary known non working expressions
-
-[Problem with the printing of the lambda expression]
-(\y^A (\x^(A -> (C -> A)) (x y))):C -> A
