@@ -23,7 +23,11 @@ import (
 
 func typeCheck(expressionTree *node, typeTree *node) error {
 	context := contextStack{nil}
+
+	/* Infer what the type of the expression SHOULD be */
 	inferredType, err := typeInference(context, expressionTree)
+
+	/* Compare the type in the judgement with the inferred type */
 	if inferredType == nil {
 		return err
 	} else {
