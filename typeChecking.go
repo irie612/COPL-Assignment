@@ -60,7 +60,7 @@ func typeInference(context contextStack, n *node) (*node, error) {
 		context.addStatement(n.value, n.right)
 		
 		/* Infer what T' should be, by passing E to further calls */
-		right, err := typeInference(context, n.left)
+		right, err := typeInference(context, n.left) // right = T'
 
 		/* Return nil if T' cannot be inferred, otherwise return (T->T') */
 		if right == nil {
