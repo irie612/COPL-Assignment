@@ -6,7 +6,7 @@ CLASS: 2
 
 GROUP: 11
 
-AUTHOR(S): Emanuele Greco (s3375951), Irie Railton (s3292037), & Kah Ming wong (s2641976)
+AUTHOR(S): Emanuele Greco (s3375951), Irie Railton (s3292037), & Kah Ming Wong (s2641976)
 
 GoLang Compiler Version: go 1.13
 
