@@ -69,7 +69,7 @@ func typeInference(context contextStack, n *node) (*node, error) {
 		leftType, err := typeInference(context.getCopy(), n.left)
 		rightType, _ := typeInference(context.getCopy(), n.right)
 		//if conditions are right, return the right of the arrow type
-		// (T in the rule)
+		// (T' in the rule)
 		if leftType == nil || rightType == nil {
 			return nil, err
 		}
