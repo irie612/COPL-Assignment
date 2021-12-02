@@ -37,17 +37,6 @@ func addChar() {
 
 //*************************************************************************
 
-// Checks if the programs gives an error, if so
-// quit the program with the return value 1.
-func checkError(err error) {
-	if err != nil {
-		fmt.Fprintf(os.Stderr, "%s\n", err)
-		os.Exit(1)
-	}
-}
-
-//*************************************************************************
-
 // Gets the first nonblank character, but can also be a newline char.
 func getNonBlank() {
 	for unicode.IsSpace(nextChar) && nextChar != '\n' {

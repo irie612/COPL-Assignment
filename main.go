@@ -49,6 +49,17 @@ func getChar() error {
 
 //*************************************************************************
 
+// Checks if the programs gives an error, if so
+// quit the program with the return value 1.
+func checkError(err error) {
+	if err != nil {
+		fmt.Fprintf(os.Stderr, "%s\n", err)
+		os.Exit(1)
+	}
+}
+
+//*************************************************************************
+
 // Main driver of the parsing.
 func main() {
 	if len(os.Args) < 2 {
@@ -73,7 +84,6 @@ func main() {
 			fmt.Fprintf(os.Stdout, rootExpressionNode.toString()+
 				" : ")
 			checkError(err)
-			os.Exit(1)
 		}
 	}
 	
