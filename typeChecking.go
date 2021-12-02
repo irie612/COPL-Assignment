@@ -39,8 +39,9 @@ func typeCheck(expressionTree *node, typeTree *node) error {
 
 func typeInference(context contextStack, n *node) (*node, error) {
 	switch n.token {
+	/* Case (x: T) */
 	case VARIABLE:
-		//if top node is a variable return the type in context (or nil)
+		/* If (x: T): Return T present in the context. If not present: nil */
 		contextType := context.getType(n.value)
 		if contextType == nil {
 			return nil,
@@ -48,36 +49,45 @@ func typeInference(context contextStack, n *node) (*node, error) {
 		} else {
 			return contextType, nil
 		}
+
+	/* Case (\x^T E): T->T' */
 	case LAMBDA:
-		//add statement x:T in the context
+		/* Add T of \x^T to the context */
 		context.addStatement(n.value, n.right)
-		//get predicted type for the rest of the expression
+		
+		/* Infer what T' should be, by passing E to further calls */
 		right, err := typeInference(context, n.left)
 
-		//returning nil if there was no prediction for the rest
+		/* Return nil if T' cannot be inferred, otherwise return (T->T') */
 		if right == nil {
 			return nil, err
 		} else {
-			//create the predicted type
-			top := newNode("", ARROW)
-			left := getCopySubtree(n.right)
+			/* Create a tree in the structure of T->T' */
+			top := newNode("", ARROW)	// root of the tree
+			left := getCopySubtree(n.right)	// T (of \x^T E)
 			top.linkNodes(left, right)
 			return top, nil
 		}
+	
+	/* Case (E1E2): T' */
 	case APPLICATION:
-		//get types for left and right of the application
+		/* Infer T->T' of E1, and T of E2*/
 		leftType, err := typeInference(context.getCopy(), n.left)
 		rightType, _ := typeInference(context.getCopy(), n.right)
-		//if conditions are right, return the right of the arrow type
-		// (T' in the rule)
+		
+		/* Either T->T' of E1, or T of E2 cannot be inferred */
 		if leftType == nil || rightType == nil {
 			return nil, err
 		}
+
+		/* Compare T of E1 and T of E2, if equivalent return T' (of E1) */
 		if leftType.token == ARROW &&
 			leftType.left.compareSubtrees(rightType) {
 			return leftType.right, nil
 		}
 	}
+
+	/* Default case */
 	return nil, fmt.Errorf("cannot infer type")
 }
 
