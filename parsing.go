@@ -48,7 +48,7 @@ func parse() {
 // Grammar for expression parsing
 // <expr> ::= <lexpr> <expr'>
 // <expr'> ::= <lexpr> <expr'> | ε
-// <lexpr> ::= <pexpr> | λ<var>^<type><expr>
+// <lexpr> ::= <pexpr> | λ<var>^<type><lexpr> | λ<var>^<type>'.'<expr>
 // <pexpr> ::= <var> | '('<expr>')'
 //*************************************************************************
 
@@ -94,7 +94,7 @@ func lexpr() *node {
 				//right == type of the lambda expression
 				lambdaNode.right = typeParse()
 			} else {
-				fmt.Fprintf(os.Stderr, 
+				fmt.Fprintf(os.Stderr,
 					"MISSING TYPE AFTER LAMBDA ABSTRACTION \n")
 				os.Exit(1)
 			}
