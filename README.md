@@ -54,7 +54,7 @@ Assignment 2 builds onto our previous iteration of lexer and parser. That is, wi
 ______________________________________________________________________________________________________________________________________________
 ## Assignment 3
 
-Assigment 3 is the last addition to our existing program, which involves 'type checking'. For this, we slightly modified our existing parser, and furthermore, created new functions to parse types with. The end result of one call of parse should give us a valid `rootExpressionNode` containing within the expression as a tree, and a valid `rootTypeNode` containing within the type of `rootExpressionNode` as a tree. If either of these nodes are invalid, resulting from invalid input or grammar, then the program will terminate with exit status 1. 
+Assigment 3 is the last addition to our existing program, which involves 'type checking'. For this, we slightly modified our existing parser, and furthermore, created new functions to parse types with. The end result of one call of parse should give us a valid `rootExpressionNode` containing within the expression as a tree, and a valid `rootTypeNode` containing within the type of `rootExpressionNode` as a tree. If either of these nodes are invalid, resulting from invalid input or grammar, then the program will terminate with exit status 1. Additionally, types in `rootTypeNode` are now to be stored in the right child of lambda nodes, which, previously, were empty.
 
 
 Our type check strategy is by inference, as explained in the work groups. Hence, it is not necessarily a standard one-to-one type check strategy resulting from the three rules; but a deriviation from it, such that we go in the _reverse_ of the rules. Thus:
